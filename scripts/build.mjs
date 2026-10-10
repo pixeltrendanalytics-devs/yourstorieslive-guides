@@ -1,6 +1,7 @@
 import { readFile, writeFile, mkdir, readdir, cp, rm } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { createHash } from 'node:crypto';
 import { Marked } from 'marked';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -11,6 +12,11 @@ const guides = catalog.filter(guide => !guide.companion);
 const escape = value => String(value).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 const destination = file => `${file.endsWith('.md') ? 'reference' : 'guides'}/${file.replace(/\.md$/, '.html')}`;
 const categories = [...new Set(guides.map(guide => guide.category))];
+const stylesheet = await readFile(path.join(root, 'site', 'assets', 'site.css'));
+const browserScript = await readFile(path.join(root, 'site', 'assets', 'site.js'));
+const assetName = (name, bytes) => `site.${createHash('sha256').update(bytes).digest('hex').slice(0, 12)}.${name}`;
+const stylesheetName = assetName('css', stylesheet);
+const browserScriptName = assetName('js', browserScript);
 
 for (const guide of catalog) {
   if (!sources.has(guide.file)) throw new Error(`Missing content: ${guide.file}`);
@@ -37,7 +43,7 @@ function header(prefix = '') {
 }
 
 function document(title, body, prefix = '') {
-  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#583581"><meta name="description" content="YourStoriesLive architecture, deployment and media documentation"><title>${escape(title)} · YourStoriesLive Guides</title><link rel="stylesheet" href="${prefix}assets/site.css"></head><body>${header(prefix)}${body}<footer class="site-footer"><div><span>YourStoriesLive · Architecture, media & delivery</span><a href="${prefix}index.html">Back to all guides ↑</a></div></footer></body></html>`;
+  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#583581"><meta name="description" content="YourStoriesLive architecture, deployment and media documentation"><title>${escape(title)} · YourStoriesLive Guides</title><link rel="stylesheet" href="${prefix}assets/${stylesheetName}"></head><body>${header(prefix)}${body}<footer class="site-footer"><div><span>YourStoriesLive · Architecture, media & delivery</span><a href="${prefix}index.html">Back to all guides ↑</a></div></footer></body></html>`;
 }
 
 const essentials = guides.filter(guide => guide.collection === 'Application');
@@ -58,7 +64,9 @@ await mkdir(path.join(output, 'guides'), { recursive: true });
 await mkdir(path.join(output, 'reference'), { recursive: true });
 await mkdir(path.join(output, 'sources'), { recursive: true });
 await cp(path.join(root, 'site', 'assets'), path.join(output, 'assets'), { recursive: true });
-await writeFile(path.join(output, 'index.html'), document('Guides library', home));
+await writeFile(path.join(output, 'assets', stylesheetName), stylesheet);
+await writeFile(path.join(output, 'assets', browserScriptName), browserScript);
+await writeFile(path.join(output, 'index.html'), document('Guides library', home.replace('src="assets/site.js"', `src="assets/${browserScriptName}"`)));
 await writeFile(path.join(output, '.nojekyll'), '');
 
 for (const guide of catalog) {

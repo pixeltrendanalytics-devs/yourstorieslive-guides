@@ -34,6 +34,8 @@ HTML guides retain their layout and presentation controls. The build adds a
 return link and converts local Markdown links to their readable HTML versions.
 Markdown documents are rendered with a sidebar and mobile navigation. Source
 Markdown is also available from each written guide.
+Generated CSS and JavaScript filenames contain content hashes so new styles
+and behavior do not depend on a visitor's cached copy of an older asset.
 
 ## Publishing
 
