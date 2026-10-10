@@ -16,6 +16,9 @@ async function walk(directory) {
       if (!/<title>.+<\/title>/.test(html)) failures.push(`Missing title: ${file}`);
       const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map(match => match[1]);
       if (new Set(ids).size !== ids.length) failures.push(`Duplicate IDs: ${file}`);
+      for (const match of html.matchAll(/\bhref=["']#([^"']+)["']/g)) {
+        if (!ids.includes(decodeURIComponent(match[1]))) failures.push(`Missing section: #${match[1]} in ${file}`);
+      }
       for (const match of html.matchAll(/\b(?:href|src)=["']([^"']+)["']/g)) {
         const url = match[1].replace(/&amp;/g, '&');
         if (/^(?:https?:|mailto:|data:|javascript:)/i.test(url)) continue;

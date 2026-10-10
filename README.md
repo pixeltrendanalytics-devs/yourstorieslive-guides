@@ -25,6 +25,9 @@ relative URLs, including on GitHub Pages project paths.
 3. Set `featured: true` for a visual guide on the landing page, or `companion:
    true` for a written companion that should remain accessible without a
    duplicate landing-page entry.
+   Use `collection: "Application"` for an application overview in the first
+   landing-page section; set `reviewed` to its review date. These guides get
+   section navigation and a current-code notice instead of a historical label.
 4. Run `npm run verify` and commit the source files. Push to `main` to publish.
 
 HTML guides retain their layout and presentation controls. The build adds a
