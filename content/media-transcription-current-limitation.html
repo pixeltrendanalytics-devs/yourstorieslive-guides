@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Media transcription — current limitation</title>
+  <style>
+    :root { color-scheme: light; font-family: Inter, ui-sans-serif, system-ui, sans-serif; color: #28212a; background: #f6f3ef; }
+    body { margin: 0; padding: 28px; }
+    main { max-width: 980px; margin: auto; background: #fff; border: 1px solid #ddd5ce; border-radius: 12px; padding: 28px 32px; box-shadow: 0 8px 28px rgba(50,35,45,.06); }
+    h1 { margin: 0 0 6px; font: 600 27px/1.2 Georgia, serif; color: #51204f; }
+    h2 { margin: 26px 0 8px; font-size: 17px; color: #51204f; }
+    p, li { font-size: 14px; line-height: 1.6; }
+    .meta { color: #726a72; font-size: 12px; }
+    .notice { border-left: 4px solid #b97718; background: #fff7e8; padding: 12px 16px; margin: 18px 0; }
+    code { background: #f1edef; border-radius: 4px; padding: 1px 4px; font-size: 12px; }
+    ol { padding-left: 22px; }
+  </style>
+</head>
+<body>
+<main>
+  <h1>Media transcription: current limitation</h1>
+  <div class="meta">Last updated: 3 October 2026</div>
+
+  <div class="notice"><strong>Current result:</strong> new AWS audio/video is safely stored, but its transcript starts empty and must be entered manually.</div>
+
+  <h2>Current behaviour</h2>
+  <p>Stories, live timeline recording, Advice, Reflections, and story contributions now store new audio/video through the BFF media library in private S3. The frontend does not pass those S3 objects to the legacy PHP upload or transcription APIs.</p>
+  <p>The transcript editor remains available. This limitation does not lose the recording: the original object and its RDS asset/relationship records remain intact.</p>
+
+  <h2>Why</h2>
+  <p>The old transcriber expects PHP-managed filesystem paths. A private S3 object addressed by a media UUID is outside that contract. Reusing it would fail or create a second conflicting media copy.</p>
+
+  <h2>Required follow-up</h2>
+  <ol>
+    <li>Set audio/video to <code>transcription_pending</code> after upload completion.</li>
+    <li>Publish an asynchronous job containing the media UUID and owner context.</li>
+    <li>Use an IAM-scoped worker to read S3 and call the transcription provider, initially Amazon Transcribe.</li>
+    <li>Store transcript, language, job identifier, timestamps, and ready/failed status in RDS.</li>
+    <li>Expose status and retry through <code>/api/v1/media-library/**</code>.</li>
+    <li>Never overwrite a member-edited transcript with a late machine result.</li>
+  </ol>
+  <p><strong>Acceptance rule:</strong> until this pipeline exists, expect an empty editable transcript for a new recording—not legacy automatic transcription.</p>
+</main>
+</body>
+</html>
+

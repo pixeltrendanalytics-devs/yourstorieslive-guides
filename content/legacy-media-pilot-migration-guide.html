@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Legacy media inventory and pilot import guide</title>
+  <style>
+    :root{--ink:#26212c;--muted:#665f70;--line:#ddd6e3;--paper:#fffdfa;--panel:#f7f3f8;--brand:#5c3a75;--blue:#305c85;--green:#296547;--amber:#8a5b13;--red:#8a3541;--code:#25222a}
+    *{box-sizing:border-box} body{margin:0;background:#f1edf1;color:var(--ink);font:14px/1.52 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    main{max-width:1180px;margin:24px auto;padding:28px 34px;background:var(--paper);border:1px solid var(--line);border-radius:12px;box-shadow:0 8px 30px #362b3a12}
+    h1{font:600 28px/1.2 Georgia,serif;margin:0 0 8px;color:#33243b} h2{font-size:19px;margin:30px 0 10px;border-bottom:1px solid var(--line);padding-bottom:6px;color:#3c2850} h3{font-size:15px;margin:20px 0 7px;color:#44304f}
+    p{margin:7px 0} ul,ol{margin:7px 0 10px;padding-left:23px} li{margin:3px 0} code{background:#eee9f0;padding:1px 4px;border-radius:4px;font-size:12px} pre{margin:9px 0;background:var(--code);color:#f4edf7;padding:13px;border-radius:7px;overflow:auto;font:12px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace}
+    table{border-collapse:collapse;width:100%;margin:10px 0 16px;font-size:13px} th,td{border:1px solid var(--line);padding:7px 8px;text-align:left;vertical-align:top} th{background:#eee8f0;color:#3c2d45}
+    .lede{color:var(--muted);font-size:15px;max-width:900px}.callout{border-left:4px solid var(--brand);background:#f6f1f7;padding:10px 13px;margin:12px 0}.danger{border-left-color:var(--red);background:#fbf1f2}.note{border-left-color:var(--blue);background:#f0f5fa}
+    .flow{display:grid;grid-template-columns:repeat(5,minmax(130px,1fr));gap:9px;align-items:stretch;margin:14px 0}.box{border:1px solid var(--line);background:#fff;border-radius:7px;padding:10px;position:relative;min-height:78px}.box strong{display:block;color:#3c2850;margin-bottom:4px}.box:not(:last-child):after{content:"→";position:absolute;right:-9px;top:29px;z-index:2;background:var(--paper);color:var(--brand);font-weight:700}.box.read{border-top:4px solid var(--blue)}.box.review{border-top:4px solid var(--amber)}.box.write{border-top:4px solid var(--green)}
+    .lane{display:grid;grid-template-columns:180px 1fr;border:1px solid var(--line);border-bottom:0}.lane:last-child{border-bottom:1px solid var(--line)}.lane>strong{padding:9px;background:#eee8f0}.lane>div{padding:9px}.states{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}.state{border:1px solid var(--line);border-radius:999px;background:#fff;padding:5px 9px}.state:after{content:" →";color:var(--brand)}.state:last-child:after{content:""}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}.small{font-size:12px;color:var(--muted)}.checklist{columns:2;column-gap:28px}.tag{display:inline-block;border-radius:999px;background:#e9dff0;color:#513366;padding:2px 7px;font-size:11px;font-weight:600}
+    @media(max-width:850px){main{margin:0;padding:20px;border-radius:0}.flow{grid-template-columns:1fr}.box:not(:last-child):after{content:"↓";right:50%;top:auto;bottom:-13px}.grid2{grid-template-columns:1fr}.checklist{columns:1}.lane{grid-template-columns:1fr}.lane>strong{border-bottom:1px solid var(--line)}}
+    @media print{body{background:#fff}main{margin:0;max-width:none;border:0;box-shadow:none;padding:14mm}h2{break-after:avoid}.box,table,pre{break-inside:avoid}}
+  </style>
+</head>
+<body>
+<main>
+  <h1>Legacy media inventory and pilot import</h1>
+  <p class="lede">A safe, read-first process for discovering and copying one existing user's legacy media into the new BFF, private S3 bucket, and RDS media database—without changing PHP or touching its database.</p>
+
+  <div class="callout"><strong>Core rule:</strong> inventory first, approve an exact manifest hash, then copy only the approved URLs. The legacy system remains untouched and authoritative throughout the pilot.</div>
+
+  <h2>1. Architecture at a glance</h2>
+  <div class="flow" aria-label="End-to-end flow">
+    <div class="box read"><strong>1. Authenticate</strong>Sign in as one authorized existing user and verify <code>logged_in_user_id</code>.</div>
+    <div class="box read"><strong>2. Inventory</strong>Call bounded compatibility read APIs. Normalize assets, metadata, and relationships.</div>
+    <div class="box review"><strong>3. Approve</strong>Review counts and exceptions. Approve the immutable manifest SHA-256.</div>
+    <div class="box write"><strong>4. Pilot import</strong>Fetch exact approved URLs and write only through new BFF media APIs.</div>
+    <div class="box write"><strong>5. Reconcile</strong>Compare bytes, metadata, relationships, UI behavior, and authorization.</div>
+  </div>
+
+  <div class="lane"><strong>Legacy trust zone</strong><div>Authenticated compatibility reads → PHP backend → exact media URL. No mutations and no directory crawling.</div></div>
+  <div class="lane"><strong>Operator zone</strong><div>Protected manifest, approval, mapping, exceptions, and reconciliation. No tokens or media blobs in Git.</div></div>
+  <div class="lane"><strong>New media zone</strong><div>BFF upload/metadata/relationship APIs → private S3 + RDS. Browsers receive short-lived signed URLs only.</div></div>
+
+  <h3>Detailed flow</h3>
+  <pre>Existing user login
+      │ authenticated session + expected user ID
+      ▼
+legacy-media-inventory ──GET only──▶ BFF compatibility APIs ──▶ PHP
+      │                                      │
+      │ normalized assets/relationships      └── exact legacy resource URLs
+      ▼
+manifest.json + summary + exceptions + SHA-256
+      │
+      ▼
+human approval gate ──reject──▶ revise inventory scope
+      │ approve exact hash
+      ▼
+legacy-media-pilot-import
+      ├── GET exact approved URL; stream + validate + SHA-256
+      ├── POST new upload intent through BFF
+      ├── PUT bytes to signed private-S3 URL
+      ├── complete + metadata + relationships through BFF
+      ├── checkpoint mapping.json after every durable step
+      └── read back + reconcile ──▶ verify in new UI</pre>
+
+  <h2>2. Scope and safety</h2>
+  <div class="grid2">
+    <section>
+      <h3>Included in the pilot</h3>
+      <ul>
+        <li>One explicitly selected user per run.</li>
+        <li>Media visible through authenticated reads.</li>
+        <li>Images, videos, audio, metadata, and exposed relationships.</li>
+        <li>Story/timeline, contacts, contributions, profile, advice, reflections, moments, and shares when identities are available.</li>
+        <li>Restartable copy into private S3 and new RDS records via BFF.</li>
+      </ul>
+    </section>
+    <section>
+      <h3>Not included</h3>
+      <ul>
+        <li>No direct PHP database access or writes.</li>
+        <li>No changes to PHP code or files.</li>
+        <li>No recursive crawl of <code>/resources/</code>.</li>
+        <li>No guessed ownership or relationship target IDs.</li>
+        <li>No deletion/replacement of legacy assets.</li>
+        <li>No bulk-user migration or production cutover.</li>
+      </ul>
+    </section>
+  </div>
+
+  <div class="callout danger"><strong>Security note:</strong> the Apache listing under <code>legacy.example.invalid/resources/</code> exposes storage structure. Ask PHP operations to disable directory indexing separately. Do not use that listing as a migration source or as evidence of ownership.</div>
+
+  <h2>3. Tool one: <code>legacy-media-inventory</code></h2>
+  <p><span class="tag">READ ONLY</span> Its output is a migration proposal, not a migration.</p>
+
+  <h3>Inputs</h3>
+  <table><thead><tr><th>Input</th><th>Purpose</th><th>Guardrail</th></tr></thead><tbody>
+    <tr><td>API base URL</td><td>Approved legacy/BFF environment</td><td>HTTPS host allowlist</td></tr>
+    <tr><td>Runtime credential</td><td>One authenticated session</td><td>Never placed in output, logs, or CLI history</td></tr>
+    <tr><td>Expected legacy user ID</td><td>Defines pilot scope</td><td>Must equal authenticated identity</td></tr>
+    <tr><td>Protected output directory</td><td>Manifest and reports</td><td>Outside Git; directory 0700, files 0600</td></tr>
+    <tr><td>Page/item limits</td><td>Bound the scan</td><td>Stop instead of collecting without limit</td></tr>
+  </tbody></table>
+
+  <h3>Primary read operations</h3>
+  <ul>
+    <li><code>GET /api/v1/media-assets/groups</code></li>
+    <li><code>GET /api/v1/media-assets?datePeriod=...</code></li>
+    <li><code>GET /api/v1/media-assets/:id</code> and <code>/:id/content</code></li>
+    <li><code>GET /api/v1/media-assets/deletion-impact?ids=...</code></li>
+    <li><code>GET /api/v1/media-assets/organized-groups</code></li>
+    <li><code>GET /api/v1/media-shares/inbox</code> and <code>/outbox</code></li>
+    <li>Authenticated feature reads for profile, contacts, stories/timeline, advice, reflections, moments, and contributions.</li>
+  </ul>
+  <p>Results from feature reads enrich one canonical asset entry with relationships. They must not create duplicate assets just because the same file appears on multiple pages.</p>
+
+  <h3>What each manifest item records</h3>
+  <table><thead><tr><th>Area</th><th>Fields</th></tr></thead><tbody>
+    <tr><td>Stable identity</td><td>Source system, table/module, legacy record ID</td></tr>
+    <tr><td>Ownership evidence</td><td>Selected user ID and endpoint/response that proves visibility/ownership</td></tr>
+    <tr><td>Media</td><td>Type, filename, MIME, reported bytes, exact source URL</td></tr>
+    <tr><td>Metadata</td><td>Caption, description, taken/created dates, location, transcript</td></tr>
+    <tr><td>Relationships</td><td>Relationship kind, target ID, discovery evidence, ordering when available</td></tr>
+    <tr><td>Warnings</td><td>Missing/conflicting fields; never silently invented</td></tr>
+  </tbody></table>
+
+  <h3>Outputs</h3>
+  <table><thead><tr><th>File</th><th>Meaning</th></tr></thead><tbody>
+    <tr><td><code>manifest.json</code></td><td>Canonical input for import</td></tr>
+    <tr><td><code>manifest.sha256</code></td><td>Immutable approval boundary</td></tr>
+    <tr><td><code>inventory-summary.json</code></td><td>Counts by type, module, relationship, and missing fields</td></tr>
+    <tr><td><code>inventory-exceptions.json</code></td><td>Unsafe/unsupported items requiring review</td></tr>
+    <tr><td><code>inventory-report.md</code></td><td>Redacted human review report</td></tr>
+  </tbody></table>
+
+  <div class="callout note"><strong>Approval gate:</strong> verify user ID, totals, byte estimates, duplicate identities, relationship counts, missing fields, exceptions, and a visual sample. Approval must refer to the exact manifest SHA-256; editing the manifest invalidates approval.</div>
+
+  <h2>4. Tool two: <code>legacy-media-pilot-import</code></h2>
+  <p><span class="tag">CONTROLLED WRITES</span> Dry-run is the default. Execution requires an explicit flag.</p>
+
+  <h3>Per-item execution</h3>
+  <ol>
+    <li>Verify manifest hash, approval record, authenticated user, item/byte limits, and host allowlists.</li>
+    <li>Read the prior mapping checkpoint; skip reconciled items or resume the next incomplete state.</li>
+    <li>GET only the exact approved source URL and stream the body.</li>
+    <li>Enforce status, byte limit, MIME detection, reported size, and calculate SHA-256.</li>
+    <li>Create an upload intent with the new BFF.</li>
+    <li>Stream to the returned short-lived signed S3 PUT URL.</li>
+    <li>Complete the upload through BFF so it verifies and persists the media record.</li>
+    <li>Apply supported metadata through BFF APIs.</li>
+    <li>Create supported relationships through BFF APIs.</li>
+    <li>Atomically checkpoint after every durable step.</li>
+    <li>Read back the new asset and mark it reconciled only after comparison succeeds.</li>
+  </ol>
+
+  <h3>Restartable states</h3>
+  <div class="states">
+    <span class="state">discovered</span><span class="state">approved</span><span class="state">source_verified</span><span class="state">upload_created</span><span class="state">object_uploaded</span><span class="state">completed</span><span class="state">metadata_applied</span><span class="state">relationships_applied</span><span class="state">reconciled</span>
+  </div>
+  <p class="small">Any operational step may enter <code>retryable_error</code>. Retry resumes from the checkpoint. An ownership, identity, checksum, or mapping conflict is terminal until reviewed.</p>
+
+  <h3>Idempotency identity</h3>
+  <pre>SHA-256(source_system + source_table + legacy_record_id + legacy_user_id)</pre>
+  <p>The new mutation endpoint should enforce that idempotency key before bulk migration. The pilot mapping reduces duplication risk, but a local file alone cannot fully cover a lost network response.</p>
+
+  <h2>5. Protected pilot mapping</h2>
+  <p>The pilot uses <code>mapping.json</code> outside Git. It stores operational progress—not credentials, cookies, signed URLs, response headers, or media bytes.</p>
+  <pre>{
+  "schemaVersion": 1,
+  "sourceSystem": "ysl-legacy-php",
+  "legacyUserId": "2123",
+  "manifestSha256": "&lt;approved-sha256&gt;",
+  "items": {
+    "photo_gallery:88421": {
+      "sourceSha256": "&lt;content-sha256&gt;",
+      "newMediaId": "0b1f5dc1-5caa-4bf3-85c5-7405c2e5ae39",
+      "state": "reconciled",
+      "completedRelationships": ["story:991"],
+      "attempts": 1,
+      "lastError": null,
+      "updatedAt": "2026-10-04T09:12:00Z"
+    }
+  }
+}</pre>
+  <ul>
+    <li>Key by source table/module plus legacy record ID—not filename or URL.</li>
+    <li>Write to a sibling temp file, flush, then atomically rename.</li>
+    <li>Keep one previous valid copy for recovery.</li>
+    <li>A changed content checksum is a conflict, not an automatic overwrite.</li>
+  </ul>
+
+  <h2>6. Production mapping in RDS</h2>
+  <p>Before multi-user migration, create <code>legacy_media_mappings</code>. The unique identity is <code>(source_system, source_table, legacy_record_id)</code>. Recommended fields:</p>
+  <table><thead><tr><th>Group</th><th>Columns</th></tr></thead><tbody>
+    <tr><td>Identity</td><td><code>id</code>, <code>source_system</code>, <code>source_table</code>, <code>legacy_record_id</code>, <code>legacy_user_id</code></td></tr>
+    <tr><td>New record</td><td><code>media_asset_id</code> foreign key to the canonical media asset</td></tr>
+    <tr><td>Integrity</td><td><code>manifest_sha256</code>, <code>source_url_hash</code>, <code>source_content_sha256</code></td></tr>
+    <tr><td>Progress</td><td><code>migration_state</code>, <code>completed_relationships</code>, <code>attempt_count</code></td></tr>
+    <tr><td>Operations</td><td>Redacted error code/detail, first seen, last attempt, reconciled, created, updated timestamps</td></tr>
+  </tbody></table>
+  <p>Index <code>(legacy_user_id, migration_state)</code> and <code>media_asset_id</code>. Restrict access to the migration service role. This table is for audit/idempotency; normal media tables remain canonical.</p>
+
+  <h2>7. Relationship rules</h2>
+  <table><thead><tr><th>Legacy context</th><th>New target</th><th>Rule</th></tr></thead><tbody>
+    <tr><td>Gallery</td><td>User-owned library asset</td><td>One asset reused across contexts</td></tr>
+    <tr><td>Story/timeline</td><td><code>story:&lt;id&gt;</code></td><td>Require known target identity</td></tr>
+    <tr><td>Contact photo</td><td><code>contact:&lt;id&gt;</code></td><td>User owns media; contact is the subject</td></tr>
+    <tr><td>Contribution/comment</td><td><code>contribution:&lt;id&gt;</code></td><td>Preserve contributor/story target when exposed</td></tr>
+    <tr><td>Profile photo</td><td><code>profile-avatar:&lt;user-id&gt;</code></td><td>Distinguish active avatar from history</td></tr>
+    <tr><td>Advice/reflection/moment</td><td>Namespaced feature ID</td><td>Preserve order/section when exposed</td></tr>
+    <tr><td>Share</td><td><code>share:&lt;id&gt;</code></td><td>Only with safe recipient and state evidence</td></tr>
+  </tbody></table>
+  <p>Unknown target IDs become exceptions. If a target domain is not migrated, retain a namespaced legacy reference for later resolution.</p>
+
+  <h2>8. Transcript limitation</h2>
+  <div class="callout note">The legacy API may return transcript text, but the new media model does not yet have a durable transcript target. Preserve it in the protected manifest and report it as <code>pending_target_support</code>. Do not drop or regenerate it. Before bulk migration, add a BFF-managed transcript table/API and then import it.</div>
+
+  <h2>9. Failure behavior</h2>
+  <table><thead><tr><th>Condition</th><th>Action</th></tr></thead><tbody>
+    <tr><td>Stopped after S3 upload</td><td>Read recorded state and resume; do not create a second asset blindly.</td></tr>
+    <tr><td>Lost completion response</td><td>Read status before retrying completion.</td></tr>
+    <tr><td>Relationship failure</td><td>Keep the asset and retry only the missing link.</td></tr>
+    <tr><td>Legacy 403/404</td><td>Record exception; never guess a path.</td></tr>
+    <tr><td>MIME/checksum conflict</td><td>Stop and require review.</td></tr>
+    <tr><td>New BFF 401/403</td><td>Stop the whole run.</td></tr>
+    <tr><td>Transient 429/5xx</td><td>Capped exponential backoff with jitter.</td></tr>
+    <tr><td>Different new ID already mapped</td><td>Stop as an idempotency conflict.</td></tr>
+  </tbody></table>
+
+  <h2>10. Reconciliation</h2>
+  <div class="grid2">
+    <section><h3>Automated</h3><ul>
+      <li>Discovered = imported + excluded + failed + deferred.</li>
+      <li>One stable legacy identity → exactly one new asset.</li>
+      <li>Checksum/size/MIME and supported metadata match.</li>
+      <li>Every supported relationship exists once.</li>
+      <li>No asset is owned by another user.</li>
+      <li>Every unsupported field has a reason.</li>
+    </ul></section>
+    <section><h3>Manual</h3><ul>
+      <li>Compare gallery samples with the legacy UI.</li>
+      <li>Open image, video, and audio.</li>
+      <li>Check captions, dates, and linked feature pages.</li>
+      <li>Test reuse of migrated gallery assets.</li>
+      <li>Verify cross-user denial and signed-URL expiry.</li>
+      <li>Verify the S3 bucket is private.</li>
+    </ul></section>
+  </div>
+
+  <h2>11. Pilot runbook</h2>
+  <ol>
+    <li><strong>Prepare:</strong> choose an authorized existing test user; create protected storage; configure identity, hosts, item limits, and byte budget.</li>
+    <li><strong>Inventory:</strong> run bounded reads; validate the user ID; review summary, exceptions, and visual samples.</li>
+    <li><strong>Approve:</strong> record approval against the exact manifest hash.</li>
+    <li><strong>Dry run:</strong> show intended assets, relationships, bytes, unsupported fields, and deferrals without writing.</li>
+    <li><strong>Execute small:</strong> concurrency 1; prove one image, one video, and one audio asset first.</li>
+    <li><strong>Expand carefully:</strong> add metadata and relationship domains incrementally.</li>
+    <li><strong>Reconcile:</strong> generate automated results and verify UI/authorization.</li>
+    <li><strong>Close:</strong> preserve protected audit files; keep legacy data unchanged; translate findings into bulk-migration requirements.</li>
+  </ol>
+
+  <h3>Proposed future CLI</h3>
+  <pre>npm run migration:legacy-media:inventory -- \
+  --user-id 2123 \
+  --output /protected/legacy-media-pilot/user-2123 \
+  --max-items 5000
+
+npm run migration:legacy-media:import -- \
+  --manifest /protected/legacy-media-pilot/user-2123/manifest.json \
+  --approval /protected/legacy-media-pilot/user-2123/approval.json \
+  --mapping /protected/legacy-media-pilot/user-2123/mapping.json \
+  --dry-run
+
+npm run migration:legacy-media:import -- \
+  --manifest /protected/legacy-media-pilot/user-2123/manifest.json \
+  --approval /protected/legacy-media-pilot/user-2123/approval.json \
+  --mapping /protected/legacy-media-pilot/user-2123/mapping.json \
+  --execute --concurrency 1</pre>
+  <p class="small">These commands define the recommended interface; they do not exist until the tools are implemented. Credentials must come from an approved runtime secret mechanism, never ordinary CLI arguments.</p>
+
+  <h2>12. Rollback and future cutover</h2>
+  <p>The pilot is additive. Keep PHP media unchanged. Run on an isolated or feature-flagged user. If cleanup is required, remove only new records through supported BFF delete APIs and keep the audit mapping. A future production cutover needs server-side per-user state:</p>
+  <pre>legacy_only → inventory_ready → import_in_progress → verification_required → new_media_enabled</pre>
+  <p>Only reconciliation permits <code>new_media_enabled</code>. Failure leaves the user on the legacy path.</p>
+
+  <h2>13. Go/no-go checklist</h2>
+  <ul class="checklist">
+    <li>☐ Authorized test account selected</li>
+    <li>☐ Authenticated ID equals manifest user</li>
+    <li>☐ Read endpoints are bounded</li>
+    <li>☐ Hosts and paths are allowlisted</li>
+    <li>☐ Exact manifest hash approved</li>
+    <li>☐ No secrets/signed URLs/media in Git</li>
+    <li>☐ New writes are idempotent/restartable</li>
+    <li>☐ S3 is private</li>
+    <li>☐ Mapping storage is protected</li>
+    <li>☐ Reconciliation is ready</li>
+    <li>☐ Cross-user authorization test is ready</li>
+    <li>☐ Legacy media remains untouched</li>
+  </ul>
+
+  <p class="small">Bulk migration is a separate project requiring the RDS mapping table, controlled workers, monitoring, rate limits, per-user cutover state, and an authorized source-data strategy.</p>
+</main>
+</body>
+</html>
+

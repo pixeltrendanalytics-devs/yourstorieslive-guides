@@ -1,0 +1,499 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#24163f">
+  <meta name="description" content="YourStoriesLive AWS media and hosting POC: architecture, implementation, evidence, limitations, costs and complete teardown record.">
+  <title>YourStoriesLive — AWS POC Record</title>
+  <style>
+    :root { color-scheme:dark; --night:#191127; --ink:#241b31; --plum:#43256f; --purple:#7547b5; --lilac:#c7b2e9; --paper:#fbf8f3; --mint:#8fe0c5; --gold:#e9c47c; --rose:#f3a9b8; --sans:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; --serif:"Iowan Old Style","Palatino Linotype","Book Antiqua",Georgia,serif; }
+    * { box-sizing:border-box; }
+    html,body { height:100%; }
+    body { margin:0; background:var(--night); color:#fff; font:13px/1.55 var(--sans); overflow:hidden; }
+    button { color:inherit; font:inherit; }
+    a { color:#d5c0f0; text-underline-offset:3px; }
+    code { color:#e0cff4; font:11px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace; overflow-wrap:anywhere; }
+    .deck { position:relative; width:100%; height:100%; isolation:isolate; }
+    .ambient { position:absolute; inset:0; z-index:-1; overflow:hidden; background:radial-gradient(ellipse at 78% 8%,rgba(128,82,179,.34),transparent 35%),radial-gradient(ellipse at 7% 90%,rgba(86,59,133,.26),transparent 39%),linear-gradient(135deg,#211632,#17101f 65%); }
+    .ambient::before,.ambient::after { content:""; position:absolute; width:43vw; aspect-ratio:1; border:1px solid rgba(220,205,245,.08); border-radius:50%; }
+    .ambient::before { right:-12vw; top:-17vw; box-shadow:0 0 0 42px rgba(220,205,245,.025),0 0 0 84px rgba(220,205,245,.02); }
+    .ambient::after { left:-26vw; bottom:-32vw; box-shadow:0 0 0 50px rgba(220,205,245,.02); }
+    .topbar { position:absolute; z-index:5; inset:0 0 auto; height:64px; padding:0 4vw; display:flex; align-items:center; justify-content:space-between; gap:15px; border-bottom:1px solid rgba(255,255,255,.08); background:rgba(23,16,32,.45); backdrop-filter:blur(16px); }
+    .brand { display:flex; align-items:center; gap:11px; font-size:12px; letter-spacing:.12em; text-transform:uppercase; color:#e9dff6; }
+    .brand-mark { width:30px; height:30px; display:grid; place-items:center; border:1px solid rgba(224,207,246,.5); border-radius:50%; color:var(--lilac); font:19px var(--serif); }
+    .top-meta { display:flex; align-items:center; gap:14px; color:#b9afc6; font-size:11px; }
+    .edition { padding:5px 10px; border:1px solid rgba(143,224,197,.35); border-radius:99px; color:var(--mint); white-space:nowrap; }
+    .slide { display:none; position:absolute; inset:64px 0 70px; padding:3.7vh 6.4vw 2.5vh; overflow:auto; animation:rise .3s ease both; }
+    .slide.active { display:flex; flex-direction:column; }
+    @keyframes rise { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+    .eyebrow { color:var(--lilac); text-transform:uppercase; letter-spacing:.18em; font-size:10px; font-weight:700; margin:0 0 12px; }
+    h1,h2,h3,p { margin-top:0; }
+    h1,h2 { font-family:var(--serif); font-weight:500; letter-spacing:-.025em; }
+    h1 { font-size:clamp(36px,4.9vw,64px); line-height:1.05; margin-bottom:20px; max-width:760px; }
+    h1 span { color:var(--lilac); }
+    h2 { font-size:clamp(28px,3.1vw,42px); line-height:1.12; margin-bottom:13px; }
+    h3 { font-size:15px; font-weight:650; margin:0 0 7px; }
+    .lead { max-width:760px; color:#d4ccdc; font-size:17px; line-height:1.6; }
+    .story { max-width:920px; color:#d4ccdc; font-size:14px; line-height:1.6; margin:0 0 18px; }
+    .small-note { color:#b6acbf; font-size:11px; line-height:1.5; margin:12px 0 0; }
+    .cover { justify-content:center; }
+    .cover-art { position:absolute; width:min(34vw,430px); right:6vw; top:16%; aspect-ratio:1; opacity:.45; pointer-events:none; z-index:-1; }
+    .orbit { position:absolute; inset:3%; border:1px solid rgba(220,205,245,.35); border-radius:50%; transform:rotate(-25deg) scaleY(.7); }
+    .orbit:nth-child(2) { inset:14%; transform:rotate(32deg) scaleY(.68); }
+    .orbit:nth-child(3) { inset:27%; transform:rotate(-48deg) scaleY(.62); }
+    .core { position:absolute; inset:40%; border-radius:50%; background:radial-gradient(circle at 35% 30%,#f5e4c5,#ae85db 38%,#54377a 70%); box-shadow:0 0 75px rgba(178,133,219,.42); }
+    .cover-meta { display:flex; flex-wrap:wrap; gap:9px; margin-top:14px; }
+    .pill { border:1px solid rgba(255,255,255,.16); background:rgba(255,255,255,.055); color:#e2d9ea; border-radius:99px; padding:7px 12px; font-size:11px; }
+    .grid { display:grid; gap:12px; }
+    .two { grid-template-columns:repeat(2,minmax(0,1fr)); }
+    .three { grid-template-columns:repeat(3,minmax(0,1fr)); }
+    .card,.arch-lane,.feature-panel { padding:18px 20px; border:1px solid rgba(255,255,255,.13); border-radius:15px; background:linear-gradient(145deg,rgba(255,255,255,.085),rgba(255,255,255,.035)); box-shadow:inset 0 1px rgba(255,255,255,.06); }
+    .card p,.feature-panel p { color:#c6becd; font-size:13px; line-height:1.55; margin:0; }
+    .icon { width:28px; height:28px; display:grid; place-items:center; margin-bottom:12px; color:var(--lilac); border:1px solid rgba(202,181,231,.28); border-radius:9px; font-size:14px; }
+    .light-panel { background:var(--paper); color:var(--ink); border-radius:17px; padding:19px 22px; }
+    .light-panel h3 { color:var(--plum); }
+    .light-panel p,.light-panel li { color:#625c6b; font-size:13px; }
+    .light-panel code { color:#583677; }
+    .light-panel ul,.feature-panel ul { margin:6px 0 0; padding-left:18px; font-size:12px; line-height:1.7; }
+    .feature-panel ul { color:#c6becd; }
+    .arch-label { color:#d8c4f1; font-size:10px; text-transform:uppercase; letter-spacing:.13em; margin-bottom:12px; }
+    .arch-flow,.sequence { display:flex; align-items:stretch; gap:8px; }
+    .arch-node,.step { flex:1; min-width:0; padding:13px; display:flex; flex-direction:column; justify-content:center; min-height:78px; border:1px solid rgba(255,255,255,.14); background:rgba(14,10,20,.24); border-radius:11px; }
+    .arch-node b,.step b { font-size:12px; margin-bottom:5px; color:#f3ecf8; }
+    .arch-node span,.step span { color:#c5bace; font-size:11px; line-height:1.45; }
+    .arrow { align-self:center; color:var(--lilac); font-size:19px; }
+    .arch-caption { color:#b6acbf; font-size:11px; line-height:1.55; margin:12px 0 0; }
+    .tbl { width:100%; border-collapse:collapse; font-size:12px; }
+    .tbl th,.tbl td { padding:8px 10px; text-align:left; border-bottom:1px solid rgba(255,255,255,.11); vertical-align:top; line-height:1.5; }
+    .tbl th { color:#d8c4f1; font-size:10px; text-transform:uppercase; letter-spacing:.08em; font-weight:650; }
+    .tbl td { color:#cfc6d6; }
+    .tbl td:first-child { color:#f0e8f5; font-weight:600; width:24%; }
+    .tag { display:inline-block; padding:2px 8px; border-radius:99px; font-size:10px; font-weight:650; white-space:nowrap; }
+    .ok { color:#a9ecd4; background:rgba(143,224,197,.12); border:1px solid rgba(143,224,197,.3); }
+    .pending { color:#f0d49b; background:rgba(233,196,124,.08); border:1px solid rgba(233,196,124,.3); }
+    .gap { color:#f3b9c3; background:rgba(243,169,184,.1); border:1px solid rgba(243,169,184,.3); }
+    .banner { display:flex; align-items:center; justify-content:space-between; gap:18px; margin-top:16px; padding:13px 17px; border:1px solid rgba(233,196,124,.35); border-radius:13px; background:rgba(233,196,124,.08); }
+    .banner strong { color:#f0d49b; font-size:13px; }
+    .banner span { color:#cec4d3; font-size:12px; line-height:1.5; }
+    .banner.success { border-color:rgba(143,224,197,.35); background:rgba(143,224,197,.07); }
+    .banner.success strong { color:#a9ecd4; }
+    .stat-stack { display:flex; gap:26px; margin:8px 0 20px; }
+    .stat { border-left:1px solid rgba(255,255,255,.2); padding-left:13px; }
+    .stat strong { display:block; font:29px/1.15 var(--serif); color:#f3e6ca; }
+    .stat span { display:block; margin-top:5px; color:#bcb3c5; font-size:10px; text-transform:uppercase; letter-spacing:.09em; }
+    pre { font:11px/1.6 ui-monospace,SFMono-Regular,Menlo,monospace; color:#dbcdef; background:rgba(14,10,20,.35); border:1px solid rgba(255,255,255,.13); border-radius:11px; padding:14px 16px; overflow:auto; white-space:pre; margin:12px 0; }
+    .notes { display:none; margin-top:16px; padding:12px 16px; border:1px dashed rgba(233,196,124,.45); border-radius:12px; background:rgba(233,196,124,.06); color:#e8dcc4; font-size:12px; line-height:1.65; }
+    .notes b { color:#f0d49b; display:block; margin-bottom:5px; font-size:10px; letter-spacing:.12em; text-transform:uppercase; }
+    body.show-notes .notes { display:block; }
+    .schema-graphic { display:block; width:100%; height:auto; border:1px solid rgba(255,255,255,.13); border-radius:15px; background:rgba(14,10,20,.18); }
+    .schema-legend { display:flex; flex-wrap:wrap; gap:18px; margin:10px 0 0; color:#cfc6d6; font-size:11px; }
+    .schema-legend span { display:flex; align-items:center; gap:8px; }
+    .legend-line { width:27px; border-top:2px solid var(--mint); }
+    .legend-line.external { border-top-color:var(--gold); border-top-style:dashed; }
+    .table-scroll { overflow-x:auto; border:1px solid rgba(255,255,255,.13); border-radius:12px; }
+    .sample-table { min-width:870px; font-size:11px; }
+    .sample-table th { text-transform:none; letter-spacing:0; font-size:10px; }
+    .sample-table th code { font-size:10px; }
+    .sample-table td { font-variant-numeric:tabular-nums; }
+    .sample-table td:first-child { width:auto; }
+    .sample-table .uuid { max-width:180px; word-break:break-all; }
+    .sample-table .owner-a { color:#cfb8ee; font-weight:700; }
+    .sample-table .owner-b { color:#a9ecd4; font-weight:700; }
+    .sample-table .null { color:#a99bb6; font-style:italic; }
+    .record-details { margin-top:12px; padding:10px 14px; border:1px solid rgba(255,255,255,.15); border-radius:10px; color:#d8c4f1; font-size:12px; }
+    .record-details summary { cursor:pointer; }
+    .record-details pre { margin:10px 0 0; }
+    .footer { position:absolute; z-index:6; inset:auto 0 0; height:70px; display:flex; align-items:center; justify-content:space-between; gap:15px; padding:0 4vw; background:rgba(23,16,32,.65); border-top:1px solid rgba(255,255,255,.08); backdrop-filter:blur(16px); }
+    .progress-wrap { display:flex; align-items:center; gap:13px; flex:1; max-width:310px; }
+    .counter { min-width:45px; color:#c9c0d1; font-size:11px; font-variant-numeric:tabular-nums; }
+    .progress-track { width:100%; height:3px; border-radius:9px; background:rgba(255,255,255,.15); overflow:hidden; }
+    .progress-fill { height:100%; width:0; background:linear-gradient(90deg,#ab83dd,#e9c47c); transition:width .2s ease; }
+    .controls { display:flex; align-items:center; gap:8px; }
+    .control { display:grid; place-items:center; width:36px; height:36px; border-radius:50%; border:1px solid rgba(255,255,255,.2); background:rgba(255,255,255,.04); cursor:pointer; }
+    .control:hover:not(:disabled),.control[aria-pressed="true"] { background:rgba(255,255,255,.14); }
+    .control:focus-visible,a:focus-visible { outline:2px solid var(--gold); outline-offset:4px; }
+    .control:disabled { opacity:.32; cursor:default; }
+    .nav-hint { color:#b0a5bc; font-size:10px; margin-right:7px; }
+    .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+    @media(max-width:850px) { .slide { padding:25px 24px; } .three { grid-template-columns:1fr 1fr; } .topbar,.footer { padding:0 20px; } .cover-art { opacity:.22; right:0; width:45vw; } }
+    @media(max-width:560px) { .brand { font-size:10px; } .top-meta { font-size:10px; } .top-meta .edition { display:none; } .slide { padding:22px 17px; } h1 { font-size:39px; } h2 { font-size:30px; } .lead { font-size:15px; } .two,.three { grid-template-columns:1fr; } .arch-flow,.sequence { flex-direction:column; } .arrow { transform:rotate(90deg); } .arch-node,.step { min-height:60px; } .tbl th,.tbl td { padding:7px 5px; font-size:11px; } .tbl td:first-child { width:auto; } .banner { flex-direction:column; align-items:flex-start; gap:5px; } .stat-stack { gap:12px; } .stat strong { font-size:25px; } .nav-hint { display:none; } .progress-wrap { max-width:155px; } .footer { padding:0 14px; } .cover-art { width:70vw; right:-16vw; } }
+    @media(prefers-reduced-motion:reduce) { *,*::before,*::after { animation:none!important; transition:none!important; } }
+    @media print { :root { color-scheme:light; } body { overflow:visible; background:white; } .ambient,.topbar,.footer { display:none!important; } .deck { height:auto; } .slide,.slide.active { display:flex!important; position:relative; inset:auto; width:100%; min-height:190mm; padding:16mm 15mm; overflow:visible; background:#211632; break-after:page; print-color-adjust:exact; -webkit-print-color-adjust:exact; } .slide:last-of-type { break-after:auto; } .notes { display:block!important; } .card,.feature-panel,.light-panel,tr { break-inside:avoid; } }
+  </style>
+  <noscript><style>body { overflow:auto; } .deck { height:auto; } .slide { display:flex; flex-direction:column; position:relative; inset:auto; padding:30px; } .topbar,.footer { display:none; }</style></noscript>
+</head>
+<body>
+<main class="deck" aria-label="YourStoriesLive AWS POC briefing">
+  <div class="ambient" aria-hidden="true"></div>
+  <header class="topbar">
+    <div class="brand"><span class="brand-mark" aria-hidden="true">Y</span><span>YourStoriesLive</span></div>
+    <div class="top-meta"><span>AWS POC record</span><span class="edition">Closed · 9 October 2026</span></div>
+  </header>
+
+  <section class="slide cover active" aria-labelledby="title-1">
+    <div class="cover-art" aria-hidden="true"><i class="orbit"></i><i class="orbit"></i><i class="orbit"></i><i class="core"></i></div>
+    <p class="eyebrow">Independent media · Cloud deployment · POC findings</p>
+    <h1 id="title-1">Our media.<br><span>Our AWS experiment.</span></h1>
+    <p class="lead">We built a separate media path through NestJS, PostgreSQL and private S3, then hosted the current Next.js application and BFF in AWS. This record captures what we tried, what the evidence supports, and what needs another iteration.</p>
+    <div class="cover-meta"><span class="pill">PHP authentication preserved</span><span class="pill">Standalone media database</span><span class="pill">Infrastructure fully removed</span></div>
+    <p class="small-note">9 October 2026 · Asia/Singapore · Source code and feature branches retained</p>
+    <div class="notes"><b>Speaker notes</b>This POC asked whether we could take ownership of media without asking the PHP team to change its APIs or giving our database a connection to theirs. We also exercised hosting and deployment in AWS. The cloud environment has now been completely removed at the owner's request. This is a historical record, not an invitation to open the old testing URLs or a production launch announcement.</div>
+  </section>
+
+  <section class="slide" aria-labelledby="title-2">
+    <p class="eyebrow">01 · The question</p><h2 id="title-2">Own media.<br>Keep the product connected.</h2>
+    <p class="story">PHP continued authenticating the user and running established business operations. The new media service used the returned user ID as its identity anchor, with no connection to the PHP database.</p>
+    <div class="grid two">
+      <article class="arch-lane"><div class="arch-label">Existing compatibility path</div><div class="arch-flow"><div class="arch-node"><b>Next.js</b><span>Established feature flows</span></div><span class="arrow">→</span><div class="arch-node"><b>BFF</b><span>Compatibility APIs</span></div><span class="arrow">→</span><div class="arch-node"><b>PHP</b><span>Business APIs / owned DB</span></div></div><p class="arch-caption">Existing <code>/api/v1/media-assets/**</code> remained available for comparison.</p></article>
+      <article class="arch-lane"><div class="arch-label">New media path</div><div class="arch-flow"><div class="arch-node"><b>Next.js</b><span>New media integration</span></div><span class="arrow">→</span><div class="arch-node"><b>BFF</b><span>Media library APIs</span></div><span class="arrow">→</span><div class="arch-node"><b>RDS + S3</b><span>Metadata / private bytes</span></div></div><p class="arch-caption">New <code>/api/v1/media-library/**</code> was independent of PHP media storage.</p></article>
+    </div>
+    <div class="banner"><strong>Boundary</strong><span>The POC replaced selected media paths. It did not replace the complete PHP backend or migrate every existing user's files.</span></div>
+    <div class="notes"><b>Speaker notes</b>A PHP user ID is an external identity reference in our database, not a foreign key into their database. The BFF reads that identity from its validated session. Stories, contacts and other business records can continue to be created through PHP while their media connections live in the standalone store. Those two writes still need explicit failure handling and permission checks.</div>
+  </section>
+
+  <section class="slide" aria-labelledby="title-3">
+    <p class="eyebrow">02 · The experiment</p><h2 id="title-3">From local testing<br>to a hosted AWS path.</h2>
+    <div class="grid three">
+      <article class="card"><div class="icon">01</div><h3>Map and separate</h3><p>Reviewed PHP contracts, user identity, gallery operations and media connections across application features.</p></article>
+      <article class="card"><div class="icon">02</div><h3>Build the new service</h3><p>Added independent BFF media routes, private uploads, PostgreSQL relationships, sharing and image processing.</p></article>
+      <article class="card"><div class="icon">03</div><h3>Test from localhost</h3><p>Pointed the local frontend to AWS BFF. RDS, storage and the backend ran in AWS.</p></article>
+      <article class="card"><div class="icon">04</div><h3>Host Next.js</h3><p>Added a frontend Fargate service to the existing cluster and ALB; kept the Next.js server and image optimizer.</p></article>
+      <article class="card"><div class="icon">05</div><h3>Add edge delivery</h3><p>Added CloudFront, generated-domain HTTPS and caching for immutable Next.js build assets.</p></article>
+      <article class="card"><div class="icon">06</div><h3>Operate and remove</h3><p>Exercised pause/resume, verified startup and health on 9 October, then removed the infrastructure and retained artifacts.</p></article>
+    </div>
+    <p class="small-note">Static S3 frontend hosting was discussed but not implemented. The retained branch is <code>codex/media-platform-aws</code> in both repositories.</p>
+    <div class="notes"><b>Speaker notes</b>The cloud deployment was deliberately an experiment. We first kept the UI local, then tried the current Next.js server on ECS. Images were built on Linux in GitHub rather than on the MacBook. We retained ordinary Next.js image optimization as requested. A static frontend was an architectural option, not an outcome of this run.</div>
+  </section>
+
+  <section class="slide" aria-labelledby="title-4">
+    <p class="eyebrow">03 · Runtime architecture</p><h2 id="title-4">One cluster.<br>Two application services.</h2>
+    <div class="arch-lane"><div class="arch-label">Hosted user requests</div><div class="arch-flow"><div class="arch-node"><b>Browser</b><span>HTTPS</span></div><span class="arrow">→</span><div class="arch-node"><b>CloudFront</b><span>Global entry point</span></div><span class="arrow">→</span><div class="arch-node"><b>Shared ALB</b><span>Frontend :8080 / BFF :80</span></div><span class="arrow">→</span><div class="arch-node"><b>ECS / Fargate</b><span>Next.js :3000 / NestJS :3001</span></div></div></div>
+    <div class="grid three" style="margin-top:13px">
+      <article class="card"><h3>Private PostgreSQL</h3><p>New media metadata and relationships. Private subnets; no public database endpoint.</p></article>
+      <article class="card"><h3>Private S3</h3><p>Original media and image thumbnails. Browser PUT/GET directly through short-lived signed URLs.</p></article>
+      <article class="card"><h3>PHP + SQS</h3><p>PHP supplied existing business APIs. SQS queued media jobs, consumed inside the BFF process.</p></article>
+    </div>
+    <div class="banner"><strong>Development compromise</strong><span>CloudFront → ALB used HTTP. App tasks had public IPs for outbound traffic; no NAT Gateway. Compute/RDS stayed in Singapore.</span></div>
+    <div class="notes"><b>Speaker notes</b>CloudFront sent API paths to the BFF and other paths to Next.js. The ALB kept a stable endpoint when tasks changed. Task public IPs supplied outbound connectivity in a VPC without NAT; the ALB connected to targets inside the VPC. Files did not have to travel through the BFF. This design provided a global entry point, not a multi-region application or database.</div>
+  </section>
+
+  <section class="slide" aria-labelledby="title-5">
+    <p class="eyebrow">04 · Identity and persistence</p><h2 id="title-5">Two tables.<br>One stable user identity.</h2>
+    <div class="grid two">
+      <article class="light-panel"><h3>media_library_assets</h3><p>One row per uploaded asset.</p><ul><li><code>owner_external_user_id</code>: authenticated PHP user ID</li><li><code>public_id</code>: UUID exposed by the API</li><li><code>id</code>: internal BIGINT primary key</li><li>S3 keys, filename, MIME type and byte size</li><li>Captions, dates, dimensions, processing/deletion state</li></ul></article>
+      <article class="light-panel"><h3>media_library_relationships</h3><p>Connections between an asset and another application record.</p><ul><li><code>media_asset_id</code>: foreign key to our asset table</li><li><code>context_type</code>: story, contact, profile, share, etc.</li><li><code>external_reference_id</code>: business-record reference</li><li><code>recipient_external_user_id</code>: share recipient</li><li>No foreign key or connection into the PHP database</li></ul></article>
+    </div>
+    <pre>PHP user ID → asset owner → asset internal ID → relationship → external record ID
+                           └─ S3 original / generated thumbnail key
+
+users/&lt;owner-ID-hash&gt;/original/&lt;media-UUID&gt;/&lt;sanitized-filename&gt;</pre>
+    <p class="small-note">Storage hashing organizes objects; authorization comes from BFF checks, IAM and private signed access. Month grouping falls back to upload date when a taken date is absent.</p>
+    <div class="notes"><b>Speaker notes</b>There was no mirrored users table. Uploading created a media row containing the signed-in user's external ID. Relationships supported ten contexts: story, timeline, contact, profile, advice, reflection, moment, comment, contribution and share. Your Life used the shared user-liking integration. A supplied story or contact ID still needs permission and existence checks; storing a reference alone does not prove access.</div>
+  </section>
+
+  <section class="slide" aria-labelledby="title-schema">
+    <p class="eyebrow">04a · Database schema diagram</p><h2 id="title-schema">The only database join<br>is inside our media store.</h2>
+    <p class="story">Solid line: a real PostgreSQL foreign key. Dashed lines: identity, business-record and storage references. No database connection to PHP.</p>
+    <svg class="schema-graphic" viewBox="0 0 1160 610" role="img" aria-labelledby="schema-svg-title schema-svg-description">
+      <title id="schema-svg-title">Standalone media schema with one-to-many asset relationships</title>
+      <desc id="schema-svg-description">PHP user IDs are external strings used for asset ownership and relationship ownership or recipients. Inside PostgreSQL, one media_library_assets row can have zero or many media_library_relationships rows. The relationship media_asset_id references assets.id. S3 storage keys and external business record IDs are string references, not foreign keys to PHP or object storage.</desc>
+      <defs><marker id="schema-fk-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#8fe0c5"/></marker><marker id="schema-ref-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#e9c47c"/></marker></defs>
+      <rect x="280" y="42" width="860" height="409" rx="17" fill="#7547b5" fill-opacity=".10" stroke="#c7b2e9" stroke-opacity=".4"/>
+      <text x="300" y="73" fill="#e9dff6" font-size="16" font-family="system-ui,sans-serif">Standalone PostgreSQL · our two media tables</text>
+      <rect x="18" y="150" width="220" height="143" rx="13" fill="#342344" stroke="#e9c47c" stroke-opacity=".5"/>
+      <text x="35" y="177" fill="#f0d49b" font-size="14" font-family="system-ui,sans-serif">PHP identity / BFF session</text>
+      <g font-family="system-ui,sans-serif" font-size="12" fill="#d6cce0"><text x="35" y="204">Alex: user ID “1001”</text><text x="35" y="226">Jordan: user ID “1002”</text><text x="35" y="252">External strings; no users table</text><text x="35" y="273">No tokens stored in media rows</text></g>
+      <path d="M238 222H300" fill="none" stroke="#e9c47c" stroke-width="2" stroke-dasharray="6 5" marker-end="url(#schema-ref-arrow)"/>
+      <path d="M128 150V92H698V244H730" fill="none" stroke="#e9c47c" stroke-width="2" stroke-dasharray="6 5" marker-end="url(#schema-ref-arrow)"/>
+      <rect x="300" y="112" width="330" height="315" rx="12" fill="#2d203d" stroke="#c7b2e9" stroke-opacity=".6"/>
+      <path d="M300 158H630" stroke="#c7b2e9" stroke-opacity=".3"/>
+      <text x="318" y="140" fill="#efe5fa" font-size="15" font-weight="600" font-family="system-ui,sans-serif">media_library_assets</text>
+      <g font-family="ui-monospace,monospace" font-size="12"><text x="318" y="180" fill="#8fe0c5">id BIGINT · PK</text><text x="318" y="203" fill="#dfd1ed">public_id UUID · UNIQUE</text><text x="318" y="226" fill="#e9c47c">owner_external_user_id VARCHAR</text><text x="318" y="249" fill="#dfd1ed">storage_key VARCHAR · UNIQUE</text><text x="318" y="272" fill="#dfd1ed">thumbnail_storage_key VARCHAR?</text><text x="318" y="295" fill="#dfd1ed">media_kind / content_type / byte_size</text><text x="318" y="318" fill="#dfd1ed">status / processing_status</text><text x="318" y="341" fill="#dfd1ed">taken_on / caption / location_text</text><text x="318" y="364" fill="#dfd1ed">created_at / updated_at / deleted_at</text></g>
+      <text x="318" y="402" fill="#b8aac7" font-size="11" font-family="system-ui,sans-serif">Other fields: filename, description, dimensions, error</text>
+      <rect x="730" y="112" width="395" height="315" rx="12" fill="#2d203d" stroke="#8fe0c5" stroke-opacity=".6"/>
+      <path d="M730 158H1125" stroke="#8fe0c5" stroke-opacity=".3"/>
+      <text x="748" y="140" fill="#efe5fa" font-size="15" font-weight="600" font-family="system-ui,sans-serif">media_library_relationships</text>
+      <g font-family="ui-monospace,monospace" font-size="12"><text x="748" y="180" fill="#8fe0c5">id BIGINT · PK</text><text x="748" y="203" fill="#dfd1ed">public_id UUID · UNIQUE</text><text x="748" y="222" fill="#8fe0c5">media_asset_id BIGINT · FK → assets.id</text><text x="748" y="246" fill="#e9c47c">owner_external_user_id VARCHAR</text><text x="748" y="269" fill="#dfd1ed">context_type VARCHAR</text><text x="748" y="292" fill="#e9c47c">external_reference_id VARCHAR</text><text x="748" y="315" fill="#e9c47c">recipient_external_user_id VARCHAR?</text><text x="748" y="338" fill="#dfd1ed">external_reference_label VARCHAR?</text><text x="748" y="361" fill="#dfd1ed">created_at / deleted_at</text></g>
+      <text x="748" y="402" fill="#b8aac7" font-size="11" font-family="system-ui,sans-serif">Recipient is required only for context_type = share</text>
+      <path d="M630 177H656V219H730" fill="none" stroke="#8fe0c5" stroke-width="2.5" marker-end="url(#schema-fk-arrow)"/>
+      <text x="643" y="168" fill="#8fe0c5" font-size="12" font-family="system-ui,sans-serif">1 → 0..N</text>
+      <text x="645" y="239" fill="#b8aac7" font-size="10" font-family="system-ui,sans-serif">internal FK</text>
+      <path d="M465 427V493" fill="none" stroke="#e9c47c" stroke-width="2" stroke-dasharray="6 5" marker-end="url(#schema-ref-arrow)"/>
+      <path d="M927 427V493" fill="none" stroke="#e9c47c" stroke-width="2" stroke-dasharray="6 5" marker-end="url(#schema-ref-arrow)"/>
+      <text x="478" y="477" fill="#e9c47c" font-size="11" font-family="system-ui,sans-serif">S3 key reference</text><text x="941" y="477" fill="#e9c47c" font-size="11" font-family="system-ui,sans-serif">external ID reference</text>
+      <rect x="300" y="493" width="330" height="91" rx="12" fill="#342344" stroke="#e9c47c" stroke-opacity=".45"/>
+      <text x="318" y="519" fill="#f0d49b" font-size="14" font-family="system-ui,sans-serif">Private S3 objects</text><text x="318" y="543" fill="#d6cce0" font-size="12" font-family="system-ui,sans-serif">Original bytes + optional image thumbnail</text><text x="318" y="563" fill="#b8aac7" font-size="11" font-family="system-ui,sans-serif">Keys in RDS; signed URLs generated on read</text>
+      <rect x="730" y="493" width="395" height="91" rx="12" fill="#342344" stroke="#e9c47c" stroke-opacity=".45"/>
+      <text x="748" y="519" fill="#f0d49b" font-size="14" font-family="system-ui,sans-serif">PHP-owned application records</text><text x="748" y="543" fill="#d6cce0" font-size="12" font-family="system-ui,sans-serif">Story, contact, advice, reflection, contribution…</text><text x="748" y="563" fill="#b8aac7" font-size="11" font-family="system-ui,sans-serif">No cross-database FK, SQL join or DB connection</text>
+    </svg>
+    <div class="schema-legend"><span><i class="legend-line"></i>Internal FK: many links reference one asset</span><span><i class="legend-line external"></i>External reference: checked at the application boundary</span></div>
+    <div class="notes"><b>Speaker notes</b>The arrow from assets to relationships shows cardinality; the actual FK column sits on the relationship and references assets.id. Owner and recipient IDs are strings from authentication, not mirrored user rows. PostgreSQL can enforce the internal media FK but cannot enforce a story or contact's existence in PHP. A physical asset deletion cascades to links; a deleted_at soft deletion does not trigger that cascade.</div>
+  </section>
+
+  <section class="slide" aria-labelledby="title-sample-assets">
+    <p class="eyebrow">04b · Sample asset rows</p><h2 id="title-sample-assets">Alex uploads three files.<br>Jordan uploads one.</h2>
+    <p class="story">Fictional PHP user IDs: <strong style="color:var(--lilac)">Alex = “1001”</strong> and <strong style="color:var(--mint)">Jordan = “1002”</strong>. These are example rows, not recovered data. Registration/login alone inserts no media row; the first upload does.</p>
+    <div class="table-scroll"><table class="tbl sample-table"><thead><tr><th>Example</th><th><code>id</code><br>Internal PK</th><th><code>owner_external_user_id</code></th><th><code>public_id</code><br>API UUID</th><th><code>original_filename</code></th><th><code>media_kind</code></th><th><code>status</code></th><th><code>processing_status</code></th></tr></thead><tbody>
+      <tr><td>A1</td><td>101</td><td class="owner-a">1001</td><td class="uuid"><code>11111111-1111-4111-8111-111111111111</code></td><td>beach.jpg</td><td>image</td><td>ready</td><td>ready</td></tr>
+      <tr><td>A2</td><td>102</td><td class="owner-a">1001</td><td class="uuid"><code>22222222-2222-4222-8222-222222222222</code></td><td>birthday.mp4</td><td>video</td><td>ready</td><td>ready</td></tr>
+      <tr><td>A3</td><td>103</td><td class="owner-a">1001</td><td class="uuid"><code>33333333-3333-4333-8333-333333333333</code></td><td>advice.webm</td><td>audio</td><td>ready</td><td>ready</td></tr>
+      <tr><td>B1</td><td>201</td><td class="owner-b">1002</td><td class="uuid"><code>44444444-4444-4444-8444-444444444444</code></td><td>school.jpg</td><td>image</td><td>ready</td><td>ready</td></tr>
+    </tbody></table></div>
+    <table class="tbl" style="margin-top:12px"><thead><tr><th>Example</th><th>Metadata example</th><th>Gallery grouping / thumbnail</th></tr></thead><tbody>
+      <tr><td>A1 · beach.jpg</td><td>image/jpeg · 1,500,000 bytes · caption “Summer at the beach” · taken_on = 2026-07-04 · uploaded 9 Oct.</td><td>July 2026; generated WebP thumbnail key.</td></tr>
+      <tr><td>A2 / A3 · video / audio</td><td>video/mp4 · 25,000,000 bytes / audio/webm · 1,200,000 bytes · taken_on = NULL · uploaded 9 Oct.</td><td>October 2026; thumbnail_storage_key = NULL.</td></tr>
+      <tr><td>B1 · school.jpg</td><td>image/jpeg · 900,000 bytes · caption “Our school days” · taken_on = 2005-06-12 · uploaded 9 Oct.</td><td>June 2005; generated WebP thumbnail key.</td></tr>
+    </tbody></table>
+    <details class="record-details"><summary>Expand: exact S3 keys stored for asset 101</summary><pre>storage_key:
+users/fe675fe7aaee830b6fed09b64e034f84dcbdaeb429d9cccd4ebb90e15af8dd71/original/11111111-1111-4111-8111-111111111111/beach.jpg
+
+thumbnail_storage_key:
+users/fe675fe7aaee830b6fed09b64e034f84dcbdaeb429d9cccd4ebb90e15af8dd71/thumbnail/11111111-1111-4111-8111-111111111111/beach.webp
+
+The prefix is SHA-256 of "1001". Signed URLs are generated later, not stored here.</pre></details>
+    <p class="small-note">Projection of <code>media_library_assets</code>; A1/A2/A3/B1 are explanatory labels, not columns. All samples have <code>deleted_at = NULL</code>. Video/audio “processing ready” does not mean transcoded or transcribed.</p>
+    <div class="notes"><b>Speaker notes</b>The internal ID is what joins the two database tables. The public UUID is what the API exposes. Alex sees three owned assets and Jordan one. Upload date is automatic, whereas taken_on is optional metadata; that is why a recently uploaded historical image can appear in June 2005. The database stores durable S3 keys. Tokens, passwords and expiring signed URLs are not media-table fields.</div>
+  </section>
+
+  <section class="slide" aria-labelledby="title-sample-links">
+    <p class="eyebrow">04c · Sample relationship rows</p><h2 id="title-sample-links">One photo.<br>Several connections.</h2>
+    <p class="story">Alex creates story <strong>501</strong> and has contact <strong>701</strong> for Jordan. Every relationship below joins back to an existing asset. The S3 original is reused.</p>
+    <div class="table-scroll"><table class="tbl sample-table"><thead><tr><th><code>id</code></th><th><code>owner_external_user_id</code></th><th><code>media_asset_id</code><br>FK → assets.id</th><th><code>context_type</code></th><th><code>external_reference_id</code></th><th><code>recipient_external_user_id</code></th><th>Meaning</th></tr></thead><tbody>
+      <tr><td>10001</td><td class="owner-a">1001</td><td>101 · A1</td><td>story</td><td>501</td><td class="null">NULL</td><td>Beach photo in story 501.</td></tr>
+      <tr><td>10002</td><td class="owner-a">1001</td><td>102 · A2</td><td>story</td><td>501</td><td class="null">NULL</td><td>Video in the same story.</td></tr>
+      <tr><td>10003</td><td class="owner-a">1001</td><td>102 · A2</td><td>timeline</td><td>501</td><td class="null">NULL</td><td>Optional separate timeline context.</td></tr>
+      <tr><td>10004</td><td class="owner-a">1001</td><td>101 · A1</td><td>contact</td><td>701</td><td class="null">NULL</td><td>Same photo assigned to a contact.</td></tr>
+      <tr><td>10005</td><td class="owner-a">1001</td><td>101 · A1</td><td>profile</td><td>avatar</td><td class="null">NULL</td><td>Same photo selected as avatar.</td></tr>
+      <tr><td>10006</td><td class="owner-a">1001</td><td>103 · A3</td><td>advice</td><td>801</td><td class="null">NULL</td><td>Audio for advice record 801.</td></tr>
+      <tr><td>10007</td><td class="owner-a">1001</td><td>101 · A1</td><td>moment</td><td>802</td><td class="null">NULL</td><td>Photo for moment record 802.</td></tr>
+      <tr><td>10008</td><td class="owner-a">1001</td><td>101 · A1</td><td>share</td><td>701</td><td class="owner-b">1002</td><td>Explicit media access for Jordan.</td></tr>
+    </tbody></table></div>
+    <div class="banner"><strong>Contact ID ≠ user ID</strong><span><code>701</code> identifies the contact record. <code>1002</code> identifies the signed-in recipient. Assigning to a contact does not itself grant sharing access.</span></div>
+    <p class="small-note">These are projected columns from <code>media_library_relationships</code>. Every row also has its own UUID, optional label, creation timestamp and <code>deleted_at = NULL</code>. “A1” labels are explanatory; the FK value is the number 101.</p>
+    <div class="notes"><b>Speaker notes</b>One story has two media links, one photo has several feature links, and one share grants a named recipient access while keeping Alex as the owner. The active unique index prevents identical active links. A story visible on the timeline does not necessarily require a separate timeline row; the table illustrates that context when needed. Context type plus external ID identifies the target, so story 501 and contact 501 would be different connections.</div>
+  </section>
+
+  <section class="slide" aria-labelledby="title-sample-contributions">
+    <p class="eyebrow">04d · Cross-user media examples</p><h2 id="title-sample-contributions">Jordan contributes a photo.<br>Jordan still owns the file.</h2>
+    <p class="story">Asset <strong>201 · B1 · school.jpg</strong> belongs to Jordan (<strong style="color:var(--mint)">1002</strong>). A context link attaches it to the content; a separate share lets Alex (<strong style="color:var(--lilac)">1001</strong>) read it.</p>
+    <div class="table-scroll"><table class="tbl sample-table"><thead><tr><th><code>id</code></th><th><code>owner_external_user_id</code></th><th><code>media_asset_id</code></th><th><code>context_type</code></th><th><code>external_reference_id</code></th><th><code>recipient_external_user_id</code></th><th>Meaning</th></tr></thead><tbody>
+      <tr><td>10009</td><td class="owner-b">1002</td><td>201</td><td>reflection</td><td>901</td><td class="null">NULL</td><td>Jordan's reflection about Alex.</td></tr>
+      <tr><td>10010</td><td class="owner-b">1002</td><td>201</td><td>share</td><td>901</td><td class="owner-a">1001</td><td>Alex can read this reflection media.</td></tr>
+      <tr><td>10011</td><td class="owner-b">1002</td><td>201</td><td>contribution</td><td>601</td><td class="null">NULL</td><td>Jordan's contribution attachment.</td></tr>
+      <tr><td>10012</td><td class="owner-b">1002</td><td>201</td><td>share</td><td>601</td><td class="owner-a">1001</td><td>Story owner Alex can read the media.</td></tr>
+      <tr><td>10013</td><td class="owner-b">1002</td><td>201</td><td>comment</td><td>602</td><td class="null">NULL</td><td>Illustrative comment attachment.</td></tr>
+      <tr><td>10014</td><td class="owner-b">1002</td><td>201</td><td>share</td><td>602</td><td class="owner-a">1001</td><td>Explicit comment-media access for Alex.</td></tr>
+    </tbody></table></div>
+    <div class="grid two" style="margin-top:14px"><article class="card"><h3>Preserve ownership</h3><p>Alex's owned Photos list still has 101, 102 and 103. Asset 201 is accessible through a share; it is not copied or reassigned to Alex.</p></article><article class="card"><h3>Separate business permissions</h3><p>Invitations, story visibility and comment moderation stay separate. These example rows do not prove anonymous access or completed cross-user acceptance.</p></article></div>
+    <div class="notes"><b>Speaker notes</b>The contribution code creates a contribution relationship and a recipient-scoped share using the same contribution ID. That pattern is illustrated here, together with reflection and comment examples. All rows are fictional and active. A media share controls signed content access; it does not automatically implement invitations, moderation or the PHP story's audience rules.</div>
+  </section>
+
+  <section class="slide" aria-labelledby="title-sample-lookups">
+    <p class="eyebrow">04e · From rows back to screens</p><h2 id="title-sample-lookups">The page supplies a context.<br>The session supplies the user.</h2>
+    <table class="tbl"><thead><tr><th>Screen / caller</th><th>Lookup in our tables</th><th>Sample result</th></tr></thead><tbody>
+      <tr><td>Alex's Photos</td><td>Active ready assets owned by user 1001.</td><td>101, 102, 103</td></tr>
+      <tr><td>Alex opens story 501</td><td>Owner 1001 + context story + target 501; join by media_asset_id.</td><td>101 and 102</td></tr>
+      <tr><td>Alex opens contact 701</td><td>Owner 1001 + context contact + target 701.</td><td>101</td></tr>
+      <tr><td>Alex's profile avatar</td><td>Owner 1001 + context profile + target avatar.</td><td>101</td></tr>
+      <tr><td>Jordan's shared media</td><td>Active share with recipient 1002.</td><td>101, still owned by Alex</td></tr>
+      <tr><td>Alex reads reflection / contribution</td><td>Authorized recipient share for target 901 / 601.</td><td>201, still owned by Jordan</td></tr>
+    </tbody></table>
+    <details class="record-details"><summary>Expand: example SQL joining Alex's story to its media</summary><pre>SELECT a.public_id, a.original_filename, a.storage_key
+FROM media_library_relationships AS r
+JOIN media_library_assets AS a ON a.id = r.media_asset_id
+WHERE r.owner_external_user_id = '1001'
+  AND r.context_type = 'story'
+  AND r.external_reference_id = '501'
+  AND r.deleted_at IS NULL
+  AND a.owner_external_user_id = '1001'
+  AND a.status = 'ready'
+  AND a.deleted_at IS NULL;</pre></details>
+    <div class="banner"><strong>Detach ≠ delete</strong><span>Removing a connection can mark only that link deleted. Deleting the media asset is a separate operation affecting its connected records and S3 objects.</span></div>
+    <p class="small-note">The BFF maps internal rows to API UUIDs and signs authorized S3 reads. The browser receives neither internal join IDs nor database credentials. No sample has been inserted into AWS.</p>
+    <div class="notes"><b>Speaker notes</b>The session identity anchors each lookup. The page adds a context type and external record ID. A recipient lookup follows share rows rather than changing the asset owner. The SQL example is an illustrative owner/story query, not a new database command we executed. More detail and the full field projections are included in the Markdown companion.</div>
+  </section>
+
+  <section class="slide" aria-labelledby="title-6">
+    <p class="eyebrow">05 · Upload and access</p><h2 id="title-6">Authorize metadata.<br>Transfer bytes directly.</h2>
+    <div class="sequence"><div class="step"><b>1 · Reserve</b><span>BFF validates identity and creates a pending asset.</span></div><span class="arrow">→</span><div class="step"><b>2 · Upload</b><span>Browser PUTs the file to its signed S3 URL.</span></div><span class="arrow">→</span><div class="step"><b>3 · Complete</b><span>BFF checks object size and marks upload ready.</span></div><span class="arrow">→</span><div class="step"><b>4 · Process</b><span>SQS consumer creates image metadata / WebP thumbnail.</span></div></div>
+    <table class="tbl" style="margin-top:18px"><thead><tr><th>New API area</th><th>Available operations</th></tr></thead><tbody>
+      <tr><td>Library and metadata</td><td>List/groups, details, captions/date edits, search, assignment filters and bulk annotation.</td></tr>
+      <tr><td>Application connections</td><td>Create/read/replace links to external application records; list shared assets.</td></tr>
+      <tr><td>Content and imports</td><td>Authorize a signed read URL; provider-authorized image import into S3.</td></tr>
+      <tr><td>Deletion</td><td>Preview related records, then delete an owner-scoped selection and its objects.</td></tr>
+    </tbody></table>
+    <div class="banner"><strong>15-minute authorization</strong><span>Signed URLs target individual objects. General AWS credentials were never sent to the browser.</span></div>
+    <div class="notes"><b>Speaker notes</b>Uploads used a single signed PUT per file. The multipart cleanup lifecycle rule should not be confused with an implemented browser multipart-upload protocol. Completion checked existence and size; content sniffing, malware scans and stronger integrity guarantees remained future work. Original bytes were preserved. A ready upload did not mean the video had been transcoded.</div>
+  </section>
+
+  <section class="slide" aria-labelledby="title-7">
+    <p class="eyebrow">06 · Application wiring</p><h2 id="title-7">Media connections<br>across the member experience.</h2>
+    <table class="tbl"><thead><tr><th>Area</th><th>Retained implementation</th><th>Evidence level</th></tr></thead><tbody>
+      <tr><td>Photos</td><td>Upload, list/detail, annotation, selection, deletion, assignments, sharing, social import.</td><td><span class="tag ok">Code + user testing</span></td></tr>
+      <tr><td>Stories / Timeline</td><td>Upload and live recording integration, linked media retrieval.</td><td><span class="tag pending">Code wired</span></td></tr>
+      <tr><td>Contacts / Profile</td><td>Upload and replacement of contact/profile media; relationship-backed reads.</td><td><span class="tag pending">Code wired</span></td></tr>
+      <tr><td>Your Life / Moments</td><td>Shared user-liking attachment preparation and relationship retrieval.</td><td><span class="tag pending">Code wired</span></td></tr>
+      <tr><td>Advice / Reflections</td><td>New upload path in composers; manual editable transcripts.</td><td><span class="tag pending">Code wired</span></td></tr>
+      <tr><td>Comments / Contributions</td><td>Attachment, relationship and share wiring; invitation permissions need acceptance.</td><td><span class="tag pending">Code wired</span></td></tr>
+    </tbody></table>
+    <div class="banner"><strong>Acceptance still needed</strong><span>Each flow needs save/edit/delete checks and cross-user permission tests. Provider handshake and anonymous invitation scenarios were not proven by final health checks.</span></div>
+    <div class="notes"><b>Speaker notes</b>The retained source goes beyond the initial Photos slice. Earlier task notes said some screens were still pending; the later code contains those upload and relationship integrations. We therefore distinguish source implementation from complete acceptance. The user explicitly confirmed uploads and video playback; that evidence does not establish every social, story, contact and contribution scenario.</div>
+  </section>
+
+  <section class="slide" aria-labelledby="title-8">
+    <p class="eyebrow">07 · AWS footprint</p><h2 id="title-8">The services<br>that supported the experiment.</h2>
+    <table class="tbl"><thead><tr><th>Service</th><th>How we used it</th></tr></thead><tbody>
+      <tr><td>ECS / Fargate + ECR</td><td>Frontend and BFF containers; separate image repositories. Frontend 1 vCPU / 2 GiB; BFF 0.25 vCPU / 512 MiB.</td></tr>
+      <tr><td>ALB + CloudFront</td><td>Stable routing/health checks, global HTTPS entry and immutable Next.js asset caching.</td></tr>
+      <tr><td>RDS PostgreSQL</td><td>Private standalone media store: db.t4g.micro, Single-AZ, 20 GiB gp3, growth limit 100 GiB.</td></tr>
+      <tr><td>S3</td><td>Private originals and generated image derivatives; signed browser access.</td></tr>
+      <tr><td>SQS + DLQ</td><td>Asynchronous processing, retry isolation and failed-job retention; BFF embedded consumer.</td></tr>
+      <tr><td>Secrets Manager</td><td>Five secrets: JWT, two legacy client secrets, social configuration and generated DB credentials.</td></tr>
+      <tr><td>CloudWatch / VPC</td><td>Logs, metrics/alarms, public app subnets and isolated database networking.</td></tr>
+      <tr><td>IAM / STS / OIDC</td><td>Scoped runtime roles and temporary GitHub deployment authentication.</td></tr>
+      <tr><td>CloudFormation / CDK</td><td>Infrastructure deployment, dependency tracking, resource updates and deletion.</td></tr>
+      <tr><td>Systems Manager</td><td>ECS Exec operational access to the BFF container and its installed PostgreSQL client.</td></tr>
+    </tbody></table>
+    <p class="small-note">No custom DNS/ACM, NAT Gateway, Transcribe, MediaConvert, or separate processing-worker service. CDK used small Lambda helper functions; Lambda did not host the BFF.</p>
+    <div class="notes"><b>Speaker notes</b>The stack intentionally used a small Single-AZ database and no NAT. These were development cost choices. IAM is permissions, STS issues temporary credentials, and OIDC is the federation protocol. CDK is a toolkit that generates CloudFormation templates, while GitHub Actions is outside AWS. The account also contained a separate SAM bootstrap bucket, which was removed only after the owner explicitly included it.</div>
+  </section>
+
+  <section class="slide" aria-labelledby="title-9">
+    <p class="eyebrow">08 · Delivery and operations</p><h2 id="title-9">GitHub builds.<br>AWS runs the selected image.</h2>
+    <div class="sequence"><div class="step"><b>Feature branch push</b><span>Tests and build in GitHub Actions.</span></div><span class="arrow">→</span><div class="step"><b>OIDC → STS</b><span>Temporary deployment-role credentials.</span></div><span class="arrow">→</span><div class="step"><b>ECR</b><span>Linux AMD64 image tagged by commit.</span></div><span class="arrow">→</span><div class="step"><b>CloudFormation → ECS</b><span>New task definition and service rollout.</span></div></div>
+    <div class="grid two" style="margin-top:17px"><article class="feature-panel"><h3>Targeted updates</h3><p>Routine code changes updated the application service. Registry and deployment identity had separate setup workflows. Persistent resources were intended to survive normal code deployment.</p></article><article class="feature-panel"><h3>Pause and resume</h3><p>Management workflows reduced task counts to zero and stopped RDS. On 9 October we resumed RDS first, then the BFF, and confirmed frontend/API health.</p></article></div>
+    <div class="banner"><strong>Database inspection</strong><span>ECS Exec was enabled. Direct CloudShell VPC access was explained, but no VPC shell environment was observed or validated before deletion.</span></div>
+    <div class="notes"><b>Speaker notes</b>The two repositories both used codex/media-platform-aws. The frontend deployment was branch-restricted. Building in GitHub avoided the MacBook's image-build issue. Database inspection could use the BFF container or a private CloudShell VPC environment; documentation and a proposed security-group setup are not evidence that a direct database session occurred.</div>
+  </section>
+
+  <section class="slide" aria-labelledby="title-10">
+    <p class="eyebrow">09 · Problems we encountered</p><h2 id="title-10">What testing<br>made visible.</h2>
+    <div class="grid two">
+      <article class="card"><h3>S3 images rejected by Next.js</h3><p>Signed bucket URLs were outside the image allowlist. The feature configuration added Singapore S3 URLs under the user object path.</p></article>
+      <article class="card"><h3>Video appeared as a broken image</h3><p>MP4 bytes reached the image optimizer. Videos without posters now use a native video preview in the gallery.</p></article>
+      <article class="card"><h3>New uploads grouped as “Undated”</h3><p>Gallery queries now fall back to the upload timestamp when no captured date is recorded.</p></article>
+      <article class="card"><h3>Live recording upload returned 422</h3><p>Recorder MIME values included codec parameters. The upload client normalizes the MIME value sent to the API.</p></article>
+      <article class="card"><h3>Hosted image loading felt slow</h3><p>User reported roughly 4–7 seconds versus faster localhost. We tried image derivatives, hosting capacity and CloudFront delivery; no final benchmark proved a latency target.</p></article>
+      <article class="card"><h3>Pausing left costs behind</h3><p>ALB/public IPs and stored data still cost money. Full removal needed explicit cleanup of retained storage, images and logs.</p></article>
+    </div>
+    <div class="notes"><b>Speaker notes</b>These findings led to concrete code and operational changes. Do not translate them into a claim that every playback problem was fixed. Native video previews still fetch metadata and can be expensive in a grid. S3 signatures can change optimizer cache keys, and global edge delivery cannot remove server image-conversion work or reduce original video bitrates.</div>
+  </section>
+
+  <section class="slide" aria-labelledby="title-11">
+    <p class="eyebrow">10 · Media limitations</p><h2 id="title-11">Playback works.<br>A video pipeline is still needed.</h2>
+    <table class="tbl"><thead><tr><th>Area</th><th>POC behavior</th><th>Next work</th></tr></thead><tbody>
+      <tr><td>Image processing</td><td>Sharp generates 600 × 600-bounded WebP thumbnails.</td><td>Resource limits, isolation and acceptance tests.</td></tr>
+      <tr><td>Video optimization</td><td>Original uploaded video; native browser player.</td><td>Poster generation, compatible codecs, fast-start and measured bitrate needs.</td></tr>
+      <tr><td>Byte ranges</td><td>S3 supports range GET; direct signed playback.</td><td>Capture actual 206 responses and test seek/startup.</td></tr>
+      <tr><td>URL expiry / retry</td><td>15-minute URLs; no automatic renewal. Retry adds a query parameter.</td><td>Request a fresh authorized URL; preserve playback position.</td></tr>
+      <tr><td>Share revocation</td><td>Stops issuing fresh URLs; existing URLs can survive to expiry.</td><td>Define acceptable revocation delay and viewer access policy.</td></tr>
+      <tr><td>Transcripts</td><td>Manual editable text; new recordings do not call PHP transcriber.</td><td>Independent asynchronous transcription pipeline.</td></tr>
+    </tbody></table>
+    <p class="small-note">No HLS/DASH, video transcoding, generated video posters, fast-start conversion or Transcribe service was deployed.</p>
+    <div class="notes"><b>Speaker notes</b>S3 byte-range delivery is useful but is not adaptive streaming. Browser codec compatibility and video layout still matter. The signed URL is a temporary bearer credential: anyone holding it can use it until expiry. Changing its query string can invalidate the signature, so retry should ask the BFF for a new URL rather than modify the old one. These were known gaps at closure, not changes implemented by this report.</div>
+  </section>
+
+  <section class="slide" aria-labelledby="title-12">
+    <p class="eyebrow">11 · Validation and confidence</p><h2 id="title-12">What we observed.<br>What still needs proof.</h2>
+    <div class="grid two"><article class="light-panel"><h3>Observed before teardown</h3><ul><li>User reported sign-in, image uploads and playable videos.</li><li>RDS was available.</li><li>Frontend and BFF each had one running task.</li><li>Both ALB target groups were healthy.</li><li>Sign-in and BFF health returned HTTP 200.</li><li>Health checked through ALB and CloudFront.</li></ul></article><article class="feature-panel"><h3>Still unproven in final verification</h3><ul><li>All feature journeys and failure recovery.</li><li>Complete social OAuth/provider import handshakes.</li><li>Cross-user and anonymous contribution access.</li><li>Range 206 behavior and long-video expiry recovery.</li><li>Direct CloudShell VPC database browsing.</li><li>Production throughput, availability and restore targets.</li></ul></article></div>
+    <div class="banner"><strong>Evidence labels matter</strong><span>Source wiring, earlier CI records, user observations and endpoint health establish different things. No new full test suite ran for this cleanup or report.</span></div>
+    <div class="notes"><b>Speaker notes</b>The template's Phase 1 test counts and delivery claims belong to that separate briefing and are not copied into this POC. The source snapshots inspected here were frontend a6e75eb and BFF a695a27. They are local branch snapshots, not a verified last-deployed image mapping. Endpoint health establishes startup and routing, not complete product acceptance.</div>
+  </section>
+
+  <section class="slide" aria-labelledby="title-13">
+    <p class="eyebrow">12 · Cost and production lessons</p><h2 id="title-13">Small compute.<br>Persistent baseline costs.</h2>
+    <div class="stat-stack"><div class="stat"><strong>~$113</strong><span>Historical active month</span></div><div class="stat"><strong>~$30</strong><span>Historical paused month</span></div><div class="stat"><strong>1 / 2</strong><span>Frontend vCPU / GiB</span></div></div>
+    <div class="grid three"><article class="card"><h3>Planning, not an invoice</h3><p>Earlier guides estimated US$112–114/month for both services always running with light usage. Five deployed secrets should replace the older estimate's count of four.</p></article><article class="card"><h3>Pause is not delete</h3><p>Task and DB compute stopped, while ALB/IPs, storage and secrets remained. A stopped RDS instance automatically restarts after seven days.</p></article><article class="card"><h3>Production needs another pass</h3><p>Multi-AZ decisions, longer backup retention, deletion protection, restore tests, migrations, TLS to origin and target authorization were still needed.</p></article></div>
+    <div class="banner"><strong>Fargate sizing</strong><span>1 vCPU / 1 GiB is unsupported. Keeping 1 vCPU meant retaining at least 2 GiB. The POC stayed at 1 vCPU / 2 GiB.</span></div>
+    <p class="small-note">Historical Singapore estimates assume approximately 730 hours/month. Re-price a future design for current rates, traffic, credits and retention.</p>
+    <div class="notes"><b>Speaker notes</b>These numbers explain the decisions made during the POC; they are not a bill or a new pricing quote. Small test workloads can spend a meaningful proportion on a load balancer and public IPs. CloudFront's distribution did not have an hourly charge but delivery is usage-based. Turning off compute leaves those fixed or stored-resource costs, which is why the final instruction was complete teardown.</div>
+  </section>
+
+  <section class="slide" aria-labelledby="title-14">
+    <p class="eyebrow">13 · Complete teardown</p><h2 id="title-14">Cloud resources removed.<br>The implementation is retained.</h2>
+    <table class="tbl"><thead><tr><th>Stack / resource group</th><th>Final outcome · 9 October 2026</th></tr></thead><tbody>
+      <tr><td>Frontend runtime + registry</td><td>Deleted CloudFront, frontend ECS service and image repository.</td></tr>
+      <tr><td>BFF runtime + registry</td><td>Deleted ALB, cluster, RDS/backups, S3 media, SQS, secrets and deployment identity.</td></tr>
+      <tr><td>CDKToolkit</td><td>Deleted bootstrap stack and its retained asset bucket after ownership audit.</td></tr>
+      <tr><td>SAM bootstrap</td><td>Separately authorized deletion; removed bucket, 22 versions and 22 delete markers.</td></tr>
+      <tr><td>Retained artifacts</td><td>Removed POC logs and images; deletion requested for 21 historical task-definition revisions.</td></tr>
+      <tr><td>Verified inventory</td><td>No active stacks, buckets, RDS, ECR, queues, app functions/logs, POC roles or Elastic IP allocations in the checked environment.</td></tr>
+    </tbody></table>
+    <div class="banner success"><strong>Cleanup completed</strong><span>All six named POC/bootstrap stacks reached DELETE_COMPLETE, including <code>aws-sam-cli-managed-default</code>.</span></div>
+    <p class="small-note"><strong style="color:var(--rose)">The database and uploaded media are permanently deleted. No final backup was created.</strong> Old URLs no longer work. Past usage may appear later in billing. Resume now requires re-provisioning.</p>
+    <div class="notes"><b>Speaker notes</b>The earlier unrelated SAM stack was preserved initially; the owner then explicitly requested its deletion as well. The final checks cover Singapore resources and account S3 buckets, not account closure or every region/service. AWS-managed service roles and billing history may remain. Local repositories, branches and guides were not deleted, and application code was not modified or committed during cleanup.</div>
+  </section>
+
+  <section class="slide" aria-labelledby="title-15">
+    <p class="eyebrow">14 · Next iteration</p><h2 id="title-15">Carry forward the boundary.<br>Prove the remaining journeys.</h2>
+    <div class="grid two"><article class="card"><h3>1 · Make playback resilient</h3><p>Fix URL renewal and retry, verify range requests, add video posters and compatible playback derivatives, then benchmark representative uploads.</p></article><article class="card"><h3>2 · Make relationships reliable</h3><p>Verify external-record access and save/link consistency. Test two-user sharing, revocation and contribution/invitation journeys.</p></article><article class="card"><h3>3 · Choose the next infrastructure</h3><p>Compare a simpler POC host with ECS/ALB using current prices. Set retention, versioned migrations, restore targets and HTTPS before production.</p></article><article class="card"><h3>4 · Add processing and migration</h3><p>Separate processing capacity as volume grows; add independent transcription. Run reviewed legacy inventory/copy/reconciliation before bulk migration.</p></article></div>
+    <div class="banner"><strong>POC conclusion</strong><span>The separate BFF / RDS / S3 path was implemented and used for test uploads. Production readiness and full feature acceptance remain next-stage work.</span></div>
+    <p class="small-note"><a href="yourstorieslive-aws-media-poc-record.md">Read the full Markdown record</a> · <a href="media-transcription-current-limitation.md">Transcript limitation</a> · <a href="legacy-media-pilot-migration-guide.html">Legacy pilot guide</a> · <a href="aws-services-reference.html">Historical AWS service reference</a></p>
+    <p class="small-note"><a href="https://docs.aws.amazon.com/AmazonECS/latest/developerguide/fargate-tasks-services.html">Fargate sizes</a> · <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObject.html">S3 byte ranges</a> · <a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/using-presigned-url.html">Signed URL behavior</a> · <a href="https://docs.aws.amazon.com/AmazonRDS/latest/APIReference/API_StopDBInstance.html">RDS stopping</a></p>
+    <div class="notes"><b>Speaker notes</b>The retained code is a useful starting point. It is not a database backup: all POC data is gone. Next time, restore infrastructure from code, provision secrets and fresh test data, fix the known media/access gaps, and agree on measured acceptance criteria. This record follows the provided stakeholder template's visual language, with compact type, keyboard navigation, printable slides and optional speaker notes.</div>
+  </section>
+
+  <footer class="footer">
+    <div class="progress-wrap"><span class="counter" id="counter" aria-live="polite">01 / 20</span><div class="progress-track" aria-hidden="true"><div class="progress-fill" id="progress"></div></div></div>
+    <div class="controls" aria-label="Presentation controls"><span class="nav-hint">← → navigate · N notes · F full screen</span><button class="control" id="notes" aria-label="Toggle speaker notes" aria-pressed="false" title="Speaker notes (N)">N</button><button class="control" id="fullscreen" aria-label="Toggle full screen" title="Full screen (F)">⛶</button><button class="control" id="prev" aria-label="Previous slide" title="Previous slide">←</button><button class="control" id="next" aria-label="Next slide" title="Next slide">→</button></div>
+  </footer>
+  <div class="sr-only" id="announcement" aria-live="polite"></div>
+</main>
+<script>
+(() => {
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const counter = document.getElementById('counter');
+  const progress = document.getElementById('progress');
+  const prev = document.getElementById('prev');
+  const next = document.getElementById('next');
+  const notes = document.getElementById('notes');
+  const announcement = document.getElementById('announcement');
+  let current = 0;
+  function showSlide(index) {
+    current = Math.max(0, Math.min(slides.length - 1, index));
+    slides.forEach((slide, position) => {
+      const active = position === current;
+      slide.classList.toggle('active', active);
+      slide.setAttribute('aria-hidden', String(!active));
+      slide.inert = !active;
+    });
+    counter.textContent = `${String(current + 1).padStart(2, '0')} / ${String(slides.length).padStart(2, '0')}`;
+    progress.style.width = `${((current + 1) / slides.length) * 100}%`;
+    prev.disabled = current === 0;
+    next.disabled = current === slides.length - 1;
+    slides[current].scrollTop = 0;
+    announcement.textContent = `Slide ${current + 1} of ${slides.length}: ${slides[current].querySelector('h1,h2').textContent}`;
+    history.replaceState(null, '', `#slide-${current + 1}`);
+  }
+  function toggleNotes() {
+    const visible = document.body.classList.toggle('show-notes');
+    notes.setAttribute('aria-pressed', String(visible));
+  }
+  async function toggleFullscreen() {
+    try {
+      if (!document.fullscreenElement) await document.documentElement.requestFullscreen?.();
+      else await document.exitFullscreen?.();
+    } catch { announcement.textContent = 'Full screen is unavailable in this viewer.'; }
+  }
+  prev.addEventListener('click', () => showSlide(current - 1));
+  next.addEventListener('click', () => showSlide(current + 1));
+  notes.addEventListener('click', toggleNotes);
+  document.getElementById('fullscreen').addEventListener('click', toggleFullscreen);
+  document.addEventListener('keydown', (event) => {
+    if (event.altKey || event.ctrlKey || event.metaKey || event.target.closest('input,textarea,select,button,a')) return;
+    if (['ArrowRight','PageDown',' '].includes(event.key)) { event.preventDefault(); showSlide(current + 1); }
+    if (['ArrowLeft','PageUp'].includes(event.key)) { event.preventDefault(); showSlide(current - 1); }
+    if (event.key === 'Home') { event.preventDefault(); showSlide(0); }
+    if (event.key === 'End') { event.preventDefault(); showSlide(slides.length - 1); }
+    if (event.key.toLowerCase() === 'n') toggleNotes();
+    if (event.key.toLowerCase() === 'f') void toggleFullscreen();
+  });
+  function readHash() { const value = Number(location.hash.match(/^#slide-(\d+)$/)?.[1]); return Number.isFinite(value) && value > 0 ? value - 1 : 0; }
+  window.addEventListener('hashchange', () => showSlide(readHash()));
+  showSlide(readHash());
+})();
+</script>
+</body>
+</html>
+

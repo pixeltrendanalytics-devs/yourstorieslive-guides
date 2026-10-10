@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>YourStoriesLive — AWS services reference</title>
+  <style>
+    :root { color-scheme: light; --ink:#263449; --muted:#58677c; --line:#d9e0e9; --paper:#fff; --wash:#f4f7fb; --blue:#315d91; --pale:#eaf1f8; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--wash); color:var(--ink); font:14px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif; }
+    main { width:min(1100px, calc(100% - 32px)); margin:28px auto; padding:28px 34px; background:var(--paper); border:1px solid var(--line); border-radius:10px; }
+    h1 { margin:0 0 4px; font:600 25px/1.25 system-ui,sans-serif; letter-spacing:-.02em; }
+    h2 { margin:26px 0 9px; padding-bottom:5px; border-bottom:1px solid var(--line); color:var(--blue); font-size:18px; }
+    p { margin:8px 0 12px; }
+    .sub { color:var(--muted); margin:0 0 18px; }
+    pre { overflow:auto; padding:14px 16px; border:1px solid var(--line); border-radius:7px; background:#f8fafc; color:#263449; font:12px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace; }
+    table { width:100%; border-collapse:collapse; font-size:13px; }
+    th,td { padding:9px 10px; border:1px solid var(--line); text-align:left; vertical-align:top; }
+    th { background:var(--pale); color:#263f5f; font-weight:650; }
+    td:first-child { width:22%; font-weight:600; }
+    .note { padding:11px 13px; border-left:3px solid #7794b8; background:#f3f7fb; color:#41536a; }
+    ul { padding-left:21px; }
+    a { color:#245b96; text-decoration:none; } a:hover { text-decoration:underline; }
+    .small { color:var(--muted); font-size:12px; }
+    @media(max-width:760px) { main { width:100%; margin:0; padding:20px 14px; border:0; border-radius:0; } table,tbody,tr,td { display:block; width:100%; } thead { display:none; } tr { margin:0 0 12px; border:1px solid var(--line); border-radius:6px; overflow:hidden; } td { border:0; border-bottom:1px solid var(--line); } td:first-child { width:100%; background:var(--pale); } td:last-child { border-bottom:0; } }
+    @media print { body { background:white; } main { width:100%; margin:0; padding:0; border:0; } a { color:inherit; } }
+  </style>
+</head>
+<body>
+<main>
+  <h1>AWS services in the YourStoriesLive setup</h1>
+  <p class="sub">Developer reference · Current development/SIT infrastructure · Based on the BFF and frontend infrastructure definitions</p>
+  <p>This describes the services configured for the current AWS design. It does not mean every resource is always running: ECS tasks and RDS can be paused for cost savings.</p>
+
+  <h2>How a request and deployment flow</h2>
+  <pre>Developer push
+  └─ GitHub Actions → GitHub OIDC / AWS STS → IAM deployment role
+       ├─ builds image → Amazon ECR
+       └─ deploys → CloudFormation (templates authored with CDK)
+
+Browser → HTTPS → CloudFront
+                 ├─ frontend + Next assets → public ALB :8080 → ECS/Fargate frontend :3000
+                 └─ /api/* →─────────────── public ALB :80   → ECS/Fargate BFF :3001
+                                                               ├─ private RDS PostgreSQL
+                                                               ├─ private S3 media bucket
+                                                               └─ SQS processing queue → DLQ</pre>
+  <p>CloudFront provides browser-facing HTTPS on its generated hostname. It forwards to the shared ALB over HTTP in the current development configuration. The ALB spans two Availability Zones; RDS is isolated in private subnets. ECS tasks currently use public subnets/public IP assignment. The frontend task's security group only accepts its app port from the ALB security group.</p>
+
+  <h2>Services used</h2>
+  <table>
+    <thead><tr><th>AWS service</th><th>Why it is here</th><th>How this application uses it</th></tr></thead>
+    <tbody>
+      <tr><td>Amazon CloudFront</td><td>Global edge entry point, HTTPS for the generated hostname, and delivery/caching for frontend assets.</td><td>Default behavior and <code>/_next/static/*</code> go to the frontend ALB listener on port 8080. <code>/api/*</code> goes to the BFF listener on port 80. Price Class 200 is configured for broad Asia-Pacific coverage.</td></tr>
+      <tr><td>Elastic Load Balancing — ALB</td><td>Stable public origin, Layer-7 routing, and health-based forwarding to application targets.</td><td>One shared ALB serves BFF on port 80 and frontend on port 8080, through separate target groups/health checks. CloudFront forwards to those listeners.</td></tr>
+      <tr><td>Amazon ECS</td><td>Schedules and maintains containerized services.</td><td>BFF runs in <code>ysl-bff-dev-cluster</code>; the Next.js service shares that cluster. Desired count can be zero while paused.</td></tr>
+      <tr><td>AWS Fargate</td><td>Runs containers without managing EC2 hosts.</td><td>BFF task: 0.25 vCPU / 512 MiB. Frontend task: 1 vCPU / 2 GiB. Both register behind the ALB.</td></tr>
+      <tr><td>Amazon ECR</td><td>Private container-image registry.</td><td>Separate BFF/frontend repositories store deployable images. Image scanning on push and a latest-images lifecycle policy are configured; ECS pulls the selected image.</td></tr>
+      <tr><td>Amazon RDS for PostgreSQL</td><td>Relational persistence for new application-owned records, separate from the legacy PHP database.</td><td>BFF connects privately to PostgreSQL in isolated subnets. Current dev configuration: PostgreSQL 16, <code>db.t4g.micro</code>, 20 GiB gp3, autoscaling to 100 GiB, encrypted, Single-AZ, one-day automated backup retention.</td></tr>
+      <tr><td>Amazon S3</td><td>Stores media bytes without putting large files in PostgreSQL or app containers.</td><td>Private bucket, public access blocked, SSL enforced, S3-managed encryption, browser CORS for signed PUT/GET, and cleanup of incomplete multipart uploads. BFF authorizes ownership and issues short-lived presigned URLs.</td></tr>
+      <tr><td>Amazon SQS</td><td>Durable buffer for asynchronous work.</td><td>Media-processing queue and dead-letter queue are provisioned; BFF task permissions are present. A queue does not process jobs on its own—a worker must consume them.</td></tr>
+      <tr><td>AWS Secrets Manager</td><td>Keeps credentials out of source and container images.</td><td>Stores generated RDS credentials, JWT, legacy API client, and social-import secrets. ECS injects selected values into the BFF task at startup.</td></tr>
+      <tr><td>AWS IAM</td><td>Defines AWS identities and permissions.</td><td>GitHub deployment, ECS task, and ECS execution roles have separate permissions for deploy, image pull, logs, S3/SQS, and secret access.</td></tr>
+      <tr><td>AWS STS + IAM OIDC provider</td><td>Federates GitHub Actions and issues short-lived credentials.</td><td>GitHub Actions presents an OIDC token; STS allows a restricted IAM deployment role to be assumed. No long-lived AWS key is needed in GitHub.</td></tr>
+      <tr><td>Amazon CloudWatch</td><td>Logs, metrics, and alarms.</td><td>Frontend/BFF container logs use seven-day log groups; PostgreSQL logs are exported. BFF CPU and unhealthy-target alarms are defined; Container Insights is enabled for the BFF cluster.</td></tr>
+      <tr><td>Amazon VPC</td><td>Network isolation, subnetting, routing, and security groups.</td><td>Two AZs; public application subnets and isolated private database subnets; zero NAT Gateways. RDS has no public endpoint and permits PostgreSQL from the BFF service.</td></tr>
+      <tr><td>Public IPv4 / Internet Gateway</td><td>Internet connectivity for the public ALB and the present public-subnet task design.</td><td>ALB has public addresses across enabled AZs. Each Fargate task configured with public-IP assignment can also receive an address. Task addresses are ephemeral; no NAT Gateway is provisioned.</td></tr>
+      <tr><td>AWS KMS (AWS-managed keys)</td><td>Key management underlying encrypted storage.</td><td>RDS storage encryption and AWS-managed S3/SQS encryption are enabled. No customer-managed KMS key is explicitly configured.</td></tr>
+      <tr><td>AWS Systems Manager message channels</td><td>Secure operator access for ECS Exec troubleshooting.</td><td>ECS Exec is enabled on BFF; the task role has <code>ssmmessages</code> permissions. This is not part of normal application request handling.</td></tr>
+      <tr><td>AWS CloudFormation</td><td>Tracks and applies infrastructure as managed stacks.</td><td>CDK-generated BFF and frontend templates create/update resources. A code-only deployment is intended to update the task definition/service rather than replace persistent data or networking.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Tools and concepts, not standalone AWS services here</h2>
+  <ul>
+    <li><strong>AWS CDK</strong> is the infrastructure-as-code toolkit; it synthesizes CloudFormation templates.</li>
+    <li><strong>GitHub Actions</strong> is the external CI/CD runner. It tests/builds images and uses OIDC to request temporary AWS credentials.</li>
+    <li><strong>OIDC</strong> is the federation protocol; AWS trust is configured in IAM and STS issues temporary credentials.</li>
+    <li><strong>Next.js and NestJS</strong> are application frameworks running in ECS containers.</li>
+  </ul>
+
+  <h2>Not currently in the deployed path</h2>
+  <ul>
+    <li><strong>Route 53 and ACM:</strong> optional custom DNS/certificate settings exist in the BFF CDK, but the current setup uses CloudFront's generated hostname and HTTP from CloudFront to ALB. No custom DNS record or ALB certificate is required for that hostname.</li>
+    <li><strong>Lambda, API Gateway, NAT Gateway, WAF, SNS, and a media worker:</strong> not part of the current request path/configuration. SQS is provisioned, but a worker is still needed for queued processing.</li>
+    <li><strong>Legacy PHP database connection:</strong> none. The new RDS instance is standalone. BFF calls to legacy PHP APIs are HTTP integration, not shared database access.</li>
+  </ul>
+  <p class="note">For normal traffic: <strong>CloudFront → ALB → ECS/Fargate</strong>. The BFF uses <strong>RDS</strong> for metadata and <strong>S3</strong> for bytes; <strong>SQS/DLQ</strong> support asynchronous processing. IAM, Secrets Manager, VPC, and CloudWatch provide permissions, secret delivery, isolation, and visibility. ECR plus GitHub Actions/OIDC/STS and CloudFormation/CDK form the deployment path.</p>
+  <p class="small">This inventory reflects infrastructure definitions, not a live account audit. Check the AWS console/CLI for current deployed, running, or paused state before operational or cost decisions.</p>
+
+  <h2>Related guides</h2>
+  <ul>
+    <li><a href="aws-development-deployment-guide.md">AWS development and BFF deployment guide</a></li>
+    <li><a href="aws-nextjs-ecs-development-guide.md">Next.js on ECS guide</a></li>
+    <li><a href="SIT-cost.md">SIT cost guide</a></li>
+    <li><a href="aws-rds-record-access-guide.md">RDS record access guide</a></li>
+  </ul>
+  <h2>AWS documentation</h2>
+  <p><a href="https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html">CloudFront</a> · <a href="https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html">ALB</a> · <a href="https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AWS_Fargate.html">ECS/Fargate</a> · <a href="https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZSingleStandby.html">RDS Multi-AZ</a> · <a href="https://docs.aws.amazon.com/AmazonECS/latest/developerguide/networking-outbound.html">ECS networking</a> · <a href="https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_create_oidc.html">GitHub OIDC with AWS</a></p>
+</main>
+</body>
+</html>
+

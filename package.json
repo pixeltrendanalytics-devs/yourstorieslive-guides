@@ -1,0 +1,15 @@
+{
+  "name": "yourstorieslive-guides",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "A static library of YourStoriesLive architecture, deployment and media guides.",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "check": "node scripts/check.mjs",
+    "verify": "npm run build && npm run check",
+    "preview": "node scripts/serve.mjs"
+  },
+  "engines": { "node": ">=22" },
+  "devDependencies": { "marked": "18.1.0" }
+}
