@@ -1,0 +1,484 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#24163f">
+  <meta name="description" content="Stakeholder briefing on Phase 1 delivery for YourStoriesLive Release 2.0: features built, APIs integrated and what remains." />
+  <title>YourStoriesLive — Phase 1 Delivery Briefing</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --night: #191127;
+      --ink: #241b31;
+      --plum: #43256f;
+      --purple: #7547b5;
+      --lilac: #c7b2e9;
+      --paper: #fbf8f3;
+      --muted: #777083;
+      --line: rgba(255,255,255,.16);
+      --mint: #8fe0c5;
+      --gold: #e9c47c;
+      --rose: #f3a9b8;
+      --sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --serif: Iowan Old Style, "Palatino Linotype", "Book Antiqua", Georgia, serif;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      color: #fff;
+      background: var(--night);
+      font-family: var(--sans);
+      overflow: hidden;
+    }
+    button { color: inherit; font: inherit; }
+    .deck { position: relative; width: 100%; height: 100%; isolation: isolate; }
+    .ambient {
+      position: absolute; inset: 0; z-index: -1; overflow: hidden;
+      background:
+        radial-gradient(ellipse at 78% 8%, rgba(128,82,179,.34), transparent 35%),
+        radial-gradient(ellipse at 7% 90%, rgba(86,59,133,.26), transparent 39%),
+        linear-gradient(135deg, #211632, #17101f 65%);
+    }
+    .ambient::before, .ambient::after {
+      content: ""; position: absolute; width: 43vw; aspect-ratio: 1; border-radius: 50%;
+      border: 1px solid rgba(220,205,245,.08); transform: rotate(-25deg);
+    }
+    .ambient::before { right: -12vw; top: -17vw; box-shadow: 0 0 0 42px rgba(220,205,245,.025), 0 0 0 84px rgba(220,205,245,.02); }
+    .ambient::after { left: -26vw; bottom: -32vw; box-shadow: 0 0 0 50px rgba(220,205,245,.02); }
+    .topbar {
+      position: absolute; z-index: 5; inset: 0 0 auto; height: 72px; padding: 0 4vw;
+      display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      background: rgba(23,16,32,.45); backdrop-filter: blur(16px);
+    }
+    .brand { display: flex; align-items: center; gap: 12px; font-size: 13px; letter-spacing: .12em; text-transform: uppercase; color: #e9dff6; }
+    .brand-mark { width: 32px; height: 32px; display: grid; place-items: center; border: 1px solid rgba(224,207,246,.5); border-radius: 50%; color: var(--lilac); font: 19px var(--serif); }
+    .top-meta { display: flex; align-items: center; gap: 18px; color: #b9afc6; font-size: 12px; }
+    .top-meta .edition { padding: 7px 11px; border: 1px solid rgba(255,255,255,.16); border-radius: 99px; color: #e8ddf6; }
+    .slide {
+      display: none; position: absolute; inset: 72px 0 76px; padding: 4.5vh 7.2vw 3vh;
+      overflow: auto; animation: rise .38s ease both;
+    }
+    .slide.active { display: flex; flex-direction: column; }
+    @keyframes rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .eyebrow { color: var(--lilac); text-transform: uppercase; letter-spacing: .2em; font-size: 11px; font-weight: 700; margin: 0 0 16px; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1, h2 { font-family: var(--serif); font-weight: 500; letter-spacing: -.035em; }
+    h1 { max-width: 780px; font-size: clamp(42px, 6.4vw, 86px); line-height: .99; margin-bottom: 23px; }
+    h2 { font-size: clamp(34px, 4vw, 54px); line-height: 1.04; margin-bottom: 15px; }
+    h3 { font-size: 16px; margin: 0 0 8px; font-weight: 650; }
+    .lead { max-width: 760px; color: #d4ccdc; font-size: clamp(16px, 1.8vw, 21px); line-height: 1.55; }
+    .small-note { color: #a89fb3; font-size: 12px; line-height: 1.5; }
+    .cover { justify-content: center; padding-top: 3vh; }
+    .cover .eyebrow { margin-bottom: 23px; }
+    .cover h1 span { color: var(--lilac); }
+    .cover .lead { margin-bottom: 30px; }
+    .cover-meta { display: flex; flex-wrap: wrap; gap: 10px; }
+    .pill { border: 1px solid rgba(255,255,255,.16); background: rgba(255,255,255,.055); color: #e2d9ea; border-radius: 99px; padding: 9px 14px; font-size: 12px; }
+    .cover-art { position: absolute; width: min(39vw, 510px); right: 8vw; top: 17%; aspect-ratio: 1; opacity: .62; pointer-events: none; }
+    .cover-art .orbit { position: absolute; inset: 3%; border: 1px solid rgba(220,205,245,.3); border-radius: 50%; transform: rotate(-25deg) scaleY(.7); }
+    .cover-art .orbit:nth-child(2) { inset: 14%; transform: rotate(32deg) scaleY(.68); }
+    .cover-art .orbit:nth-child(3) { inset: 27%; transform: rotate(-48deg) scaleY(.62); }
+    .cover-art .core { position: absolute; inset: 40%; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #f5e4c5, #ae85db 38%, #54377a 70%); box-shadow: 0 0 75px rgba(178,133,219,.42); }
+    .cover-art .memory { position: absolute; border: 1px solid rgba(231,216,245,.6); background: rgba(255,255,255,.13); backdrop-filter: blur(8px); border-radius: 12px; width: 70px; height: 89px; transform: rotate(10deg); }
+    .cover-art .memory::before { content:""; display:block; width:100%; height:61%; background:linear-gradient(145deg,rgba(239,200,135,.7),rgba(107,76,146,.5)); border-radius:11px 11px 0 0; }
+    .cover-art .memory::after { content:""; display:block; width:45%; height:3px; background:rgba(255,255,255,.55); margin:10px auto; border-radius:2px; box-shadow:0 7px rgba(255,255,255,.25); }
+    .cover-art .memory.a { top: 20%; left: 3%; }
+    .cover-art .memory.b { top: 58%; right: 7%; transform: rotate(-13deg) scale(.82); }
+    .cover-art .memory.c { top: 3%; right: 23%; transform: rotate(19deg) scale(.67); }
+    .cover::after { content:""; position:absolute; width:52%; height:1px; left:7.2vw; bottom:14%; background:linear-gradient(90deg,var(--lilac),transparent); opacity:.45; }
+    .intro-row { display: flex; align-items: end; justify-content: space-between; gap: 30px; margin-bottom: 24px; }
+    .stat-stack { display: flex; gap: 10px; align-items: stretch; }
+    .stat { min-width: 106px; border-left: 1px solid rgba(255,255,255,.2); padding: 2px 0 2px 13px; }
+    .stat strong { display: block; font: 30px/1 var(--serif); color: #f3e6ca; }
+    .stat span { display: block; margin-top: 7px; color: #bcb3c5; font-size: 10px; text-transform: uppercase; letter-spacing: .1em; }
+    .grid { display: grid; gap: 12px; }
+    .grid.two { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    .grid.three { grid-template-columns: repeat(3, minmax(0,1fr)); }
+    .grid.six { grid-template-columns: repeat(3, minmax(0,1fr)); }
+    .card {
+      position: relative; padding: 19px 20px; border: 1px solid rgba(255,255,255,.13); border-radius: 16px;
+      background: linear-gradient(145deg, rgba(255,255,255,.085), rgba(255,255,255,.035));
+      box-shadow: inset 0 1px rgba(255,255,255,.06); min-height: 119px;
+    }
+    .card p { color: #c6becd; font-size: 13px; line-height: 1.48; margin: 0; }
+    .card .icon { width: 30px; height: 30px; display: grid; place-items: center; margin-bottom: 14px; color: var(--lilac); border: 1px solid rgba(202,181,231,.28); border-radius: 10px; font-size: 15px; }
+    .card .tag { position: absolute; right: 15px; top: 15px; color: var(--mint); font-size: 10px; letter-spacing: .08em; text-transform: uppercase; }
+    .light-panel { background: var(--paper); color: var(--ink); border-radius: 20px; padding: 22px 24px; }
+    .light-panel h3 { color: var(--plum); }
+    .light-panel p, .light-panel li { color: #625c6b; }
+    .light-panel .small-note { color: #777083; }
+    .capability-list { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 0 22px; }
+    .capability { display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid #e9e2eb; }
+    .capability:last-child, .capability:nth-last-child(2) { border-bottom: 0; }
+    .check { flex: 0 0 22px; width: 22px; height: 22px; display: grid; place-items: center; border-radius: 50%; color: #246b58; background: #dff4eb; font-size: 12px; font-weight: 800; }
+    .capability strong { display: block; color: var(--ink); font-size: 13px; margin-bottom: 4px; }
+    .capability span { display: block; color: #6c6673; font-size: 12px; line-height: 1.4; }
+    .duo { display: grid; grid-template-columns: 1.04fr .96fr; gap: 16px; align-items: stretch; }
+    .feature-panel { border-radius: 18px; padding: 22px; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.13); }
+    .feature-panel h3 { color: #f0e4fb; }
+    .feature-panel p { color: #c6becd; font-size: 13px; line-height: 1.52; }
+    .feature-panel ul { margin: 0; padding-left: 18px; color: #c6becd; font-size: 12px; line-height: 1.7; }
+    .timeline-visual { position: relative; margin: 20px 2px 0; height: 68px; border-top: 1px solid rgba(225,207,245,.34); }
+    .timeline-visual .dot { position:absolute; top:-6px; width:11px;height:11px;border-radius:50%; background:#bc98e6; box-shadow:0 0 0 6px rgba(188,152,230,.12); }
+    .timeline-visual .dot:nth-child(1) { left:4%; }.timeline-visual .dot:nth-child(2) { left:28%;background:#e7c687; }.timeline-visual .dot:nth-child(3) { left:54%; }.timeline-visual .dot:nth-child(4) { left:76%;background:#91ddc1; }.timeline-visual .dot:nth-child(5) { right:3%; }
+    .timeline-visual span { position:absolute; top:18px; color:#aaa1b4; font-size:10px; }
+    .timeline-visual span:nth-of-type(1){left:0}.timeline-visual span:nth-of-type(2){left:24%}.timeline-visual span:nth-of-type(3){left:50%}.timeline-visual span:nth-of-type(4){left:72%}.timeline-visual span:nth-of-type(5){right:0}
+    .sequence { display:flex; align-items:center; gap:9px; margin:18px 0 4px; }
+    .sequence .step { flex:1; min-height:80px; display:flex; flex-direction:column; justify-content:center; padding:13px; border-radius:13px; background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.13); }
+    .sequence .step b { font-size:12px; margin-bottom:5px; }.sequence .step span { font-size:11px; line-height:1.4;color:#bcb3c5; }
+    .sequence .arrow { color:var(--lilac); font-size:17px; }
+    .architecture { display:grid; grid-template-columns:.82fr 1.18fr; gap:14px; margin-top:8px; }
+    .arch-lane { min-width:0; padding:20px; border-radius:17px; border:1px solid rgba(255,255,255,.13); background:rgba(255,255,255,.045); }
+    .arch-lane.target { background:linear-gradient(145deg,rgba(117,71,181,.25),rgba(255,255,255,.045)); border-color:rgba(202,181,231,.34); }
+    .arch-label { color:#bcb3c5; font-size:10px; text-transform:uppercase; letter-spacing:.16em; margin-bottom:15px; }
+    .arch-lane.target .arch-label { color:#dfc9f6; }
+    .arch-flow { display:flex; align-items:stretch; gap:7px; }
+    .arch-node { flex:1; min-width:0; padding:14px 10px; display:flex; flex-direction:column; justify-content:center; min-height:82px; border:1px solid rgba(255,255,255,.14); background:rgba(14,10,20,.24); border-radius:12px; }
+    .arch-node b { color:#f3ecf8; font-size:12px; margin-bottom:5px; }
+    .arch-node span { color:#bcb3c5; font-size:10px; line-height:1.35; }
+    .arch-arrow { align-self:center; color:var(--lilac); font-size:17px; }
+    .arch-caption { margin:15px 0 0; color:#aaa1b4; font-size:11px; line-height:1.5; }
+    .source-note { margin:14px 0 0; color:#a89fb3; font-size:10px; line-height:1.5; }
+    .source-note a { color:#d5c0f0; text-decoration:underline; text-underline-offset:2px; }
+    .media-callout { display:grid; grid-template-columns:1fr 1fr; gap:13px; margin-top:14px; }
+    .media-callout > div { padding:14px 16px; border-radius:13px; border:1px solid rgba(233,196,124,.3); background:rgba(233,196,124,.07); }
+    .media-callout strong { display:block; color:#f0d49b; font-size:12px; margin-bottom:5px; }
+    .media-callout span { color:#c9c0cf; font-size:11px; line-height:1.45; }
+    .cost-table { width:100%; border-collapse:collapse; margin-top:13px; font-size:11px; }
+    .cost-table th, .cost-table td { padding:9px 10px; text-align:left; border-bottom:1px solid rgba(255,255,255,.11); vertical-align:top; }
+    .cost-table th { color:#d8c4f1; font-weight:650; }
+    .cost-table td { color:#c9c0cf; }
+    .cost-table td:last-child { white-space:nowrap; color:#f1e6d0; font-variant-numeric:tabular-nums; }
+    .cost-total { display:flex; justify-content:space-between; gap:16px; margin-top:13px; padding:13px 16px; border:1px solid rgba(143,224,197,.3); border-radius:13px; background:rgba(143,224,197,.07); }
+    .cost-total strong { color:#a9ecd4; font-size:13px; }.cost-total span { color:#c9c0cf; font-size:11px; text-align:right; }
+    .banner { display:flex; align-items:center; justify-content:space-between; gap:20px; margin-top:16px; padding:15px 19px; border:1px solid rgba(233,196,124,.35); border-radius:14px; background:rgba(233,196,124,.08); }
+    .banner strong { color:#f0d49b; font-size:13px; }.banner span { color:#cec4d3; font-size:12px; line-height:1.4; }
+    .open-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+    .open-item { display:flex; gap:11px; padding:13px 15px; border-radius:13px; background:rgba(255,255,255,.055); border:1px solid rgba(255,255,255,.11); }
+    .open-item .number { font:20px/1 var(--serif); color:var(--gold); opacity:.9; }.open-item strong { display:block; font-size:12px; margin-bottom:4px; color:#f0e8f5; }.open-item p { margin:0; color:#bdb4c7; font-size:11px; line-height:1.42; }
+    .decision-layout { display:grid; grid-template-columns:.78fr 1.22fr; gap:18px; flex:1; }
+    .decision-lead { display:flex; flex-direction:column; justify-content:space-between; padding:25px; border-radius:18px; background:linear-gradient(145deg,#442770,#2a1c42); border:1px solid rgba(220,205,245,.2); }
+    .decision-lead .big-quote { color:#e8d8f7; font:clamp(23px,2.6vw,34px)/1.2 var(--serif); }
+    .decision-list { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    .decision { border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.05); border-radius:14px; padding:15px 16px; }
+    .decision b { display:block; color:#efe3f9; font-size:12px; margin-bottom:6px; }.decision p { margin:0; color:#bdb4c7; font-size:11px; line-height:1.48; }
+    .close-slide { justify-content:center; }
+    .closing-statement { max-width:800px; font:clamp(32px,4.8vw,62px)/1.08 var(--serif); color:#f4eaf8; }
+    .closing-statement em { color:var(--lilac); font-style:normal; }
+    .footer {
+      position:absolute; z-index:6; inset:auto 0 0; height:76px; display:flex; align-items:center; justify-content:space-between;
+      padding:0 4vw; background:rgba(23,16,32,.62); border-top:1px solid rgba(255,255,255,.08); backdrop-filter:blur(16px);
+    }
+    .progress-wrap { display:flex; align-items:center; gap:13px; flex:1; max-width:320px; }
+    .progress-track { width:100%; height:3px; border-radius:9px; background:rgba(255,255,255,.15); overflow:hidden; }
+    .progress-fill { width:10%; height:100%; background:linear-gradient(90deg,#ab83dd,#e9c47c); transition:width .3s ease; }
+    .counter { min-width:42px; color:#c9c0d1; font-size:11px; font-variant-numeric:tabular-nums; }
+    .controls { display:flex; align-items:center; gap:9px; }
+    .control { display:grid; place-items:center; width:39px; height:39px; border-radius:50%; border:1px solid rgba(255,255,255,.2); background:rgba(255,255,255,.04); cursor:pointer; transition:.18s ease; }
+    .control:hover:not(:disabled) { background:rgba(255,255,255,.14); border-color:rgba(255,255,255,.42); transform:translateY(-1px); }
+    .control:disabled { opacity:.32; cursor:default; }
+    .nav-hint { color:#9b92a5; font-size:10px; margin-left:8px; }
+    .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+    @media (max-width: 850px) {
+      .topbar { height:60px; padding:0 20px; }.slide { inset:60px 0 68px; padding:28px 22px; }.footer { height:68px; padding:0 20px; }
+      .cover-art { width:45vw; right:-4vw; top:18%; opacity:.3; }.cover { justify-content:flex-start; padding-top:11vh; }
+      .intro-row { display:block; }.stat-stack { margin-top:18px; }.grid.six { grid-template-columns:repeat(2,minmax(0,1fr)); }
+      .duo, .decision-layout { grid-template-columns:1fr; }.decision-layout { flex:none; }.decision-lead { min-height:160px; }
+      .architecture { grid-template-columns:1fr; }
+      .media-callout { grid-template-columns:1fr; }
+      .top-meta { gap:8px; }.top-meta .edition { display:none; }
+    }
+    @media (max-width: 560px) {
+      .brand { font-size:10px; letter-spacing:.1em; }.brand-mark { width:27px;height:27px; }.top-meta { font-size:10px; }
+      .slide { padding:24px 17px; }.cover { padding-top:11vh; }.cover-art { width:72vw; right:-24vw; top:17%; opacity:.22; }
+      h1 { font-size:45px; max-width:92%; }.lead { font-size:15px; }.eyebrow { font-size:10px; }
+      .grid.two, .grid.three, .grid.six, .capability-list, .open-grid, .decision-list { grid-template-columns:1fr; }
+      .card { min-height:0; padding:15px 16px; }.card .icon { margin-bottom:10px; }
+      .capability:last-child, .capability:nth-last-child(2) { border-bottom:1px solid #e9e2eb; }.capability:last-child { border-bottom:0; }
+      .sequence { flex-direction:column; align-items:stretch; }.sequence .arrow { transform:rotate(90deg); align-self:center; }.sequence .step { min-height:0; }
+      .arch-flow { flex-direction:column; }.arch-arrow { transform:rotate(90deg); }.arch-node { min-height:62px; }
+      .light-panel { padding:17px; }.intro-row .stat { min-width:0; }.stat-stack { justify-content:space-between; }
+      .cost-table { font-size:10px; }.cost-table th, .cost-table td { padding:7px 5px; }.cost-total { flex-direction:column; }.cost-total span { text-align:left; }
+      .footer { gap:8px; }.progress-wrap { max-width:none; }.nav-hint { display:none; }.control { width:36px;height:36px; }
+      .decision-layout { gap:10px; }.decision-lead { padding:18px; min-height:140px; }.banner { align-items:flex-start; flex-direction:column; }
+    }
+    @media (prefers-reduced-motion: reduce) { *,*::before,*::after { animation-duration:.01ms !important; transition-duration:.01ms !important; scroll-behavior:auto !important; } }
+    @media print {
+      :root { color-scheme:light; }
+      body { overflow:visible; background:#fff; color:#20182a; }
+      .ambient, .topbar, .footer { display:none !important; }
+      .deck { height:auto; }.slide, .slide.active { display:flex !important; position:relative; inset:auto; width:100%; height:100vh; page-break-after:always; overflow:hidden; padding:42px 58px; background:#211632; print-color-adjust:exact; -webkit-print-color-adjust:exact; }
+      .slide:last-of-type { page-break-after:auto; }
+      .card, .feature-panel, .open-item, .decision { break-inside:avoid; }
+    }
+
+    .tbl { width:100%; border-collapse:collapse; margin-top:10px; font-size:11.5px; }
+    .tbl th, .tbl td { padding:8px 10px; text-align:left; border-bottom:1px solid rgba(255,255,255,.1); vertical-align:top; }
+    .tbl th { color:#d8c4f1; font-weight:650; font-size:10px; text-transform:uppercase; letter-spacing:.08em; border-bottom:1px solid rgba(255,255,255,.22); }
+    .tbl td { color:#cfc6d6; line-height:1.4; }
+    .tbl td:first-child { color:#f0e8f5; font-weight:600; width:26%; }
+    .tbl td.n, .tbl th.n { text-align:center; white-space:nowrap; width:92px; font-variant-numeric:tabular-nums; }
+    .tbl td.n { color:#f3e6ca; font-weight:700; }
+    .tbl tr.sum td { border-top:1px solid rgba(255,255,255,.25); border-bottom:0; color:#f3e6ca; font-weight:700; }
+    .tbl code { color:#d9c8f1; font-size:10.5px; }
+    .tag-ok, .tag-no, .tag-na { display:inline-block; padding:2px 8px; border-radius:99px; font-size:10px; font-weight:700; letter-spacing:.04em; }
+    .tag-ok { color:#a9ecd4; background:rgba(143,224,197,.12); border:1px solid rgba(143,224,197,.3); }
+    .tag-no { color:#f3b9c3; background:rgba(243,169,184,.1); border:1px solid rgba(243,169,184,.3); }
+    .tag-na { color:#cfc6d6; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.16); }
+    .modhead { display:flex; align-items:end; justify-content:space-between; gap:24px; margin-bottom:2px; }
+    .modhead h2 { margin-bottom:6px; font-size:clamp(30px,3.4vw,44px); }
+    .bar { height:7px; border-radius:9px; background:rgba(255,255,255,.14); overflow:hidden; margin-top:6px; min-width:110px; }
+    .bar i { display:block; height:100%; background:linear-gradient(90deg,#ab83dd,#8fe0c5); }
+    .miss { margin-top:12px; padding:12px 15px; border:1px solid rgba(243,169,184,.3); border-radius:13px; background:rgba(243,169,184,.06); font-size:11.5px; line-height:1.5; color:#e5d3d9; }
+    .miss b { color:#f3b9c3; }
+    .months { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; margin-top:8px; }
+    .month { padding:16px 17px; border:1px solid rgba(255,255,255,.13); border-radius:15px; background:linear-gradient(145deg,rgba(255,255,255,.085),rgba(255,255,255,.035)); }
+    .month h3 { color:#f3e6ca; font:22px/1.1 var(--serif); margin-bottom:3px; }
+    .month .sub { color:#a89fb3; font-size:10px; text-transform:uppercase; letter-spacing:.12em; margin-bottom:10px; }
+    .month ul { margin:0; padding-left:16px; color:#c6becd; font-size:11.5px; line-height:1.55; }
+    .story { max-width:860px; color:#d4ccdc; font-size:14.5px; line-height:1.6; margin:2px 0 12px; }
+    .notes { display:none; margin-top:16px; padding:14px 17px; border:1px dashed rgba(233,196,124,.45); border-radius:13px; background:rgba(233,196,124,.06); color:#e8dcc4; font-size:12px; line-height:1.6; }
+    .notes b { color:#f0d49b; display:block; margin-bottom:5px; font-size:10px; letter-spacing:.14em; text-transform:uppercase; }
+    body.show-notes .notes { display:block; }
+    .notes-hint { color:#9b92a5; font-size:10px; margin-right:8px; }
+    @media print { .notes { display:block !important; } }
+    @media (max-width:850px){ .months{grid-template-columns:repeat(2,minmax(0,1fr));} .modhead{display:block;} }
+    @media (max-width:560px){ .months{grid-template-columns:1fr;} .tbl{font-size:10.5px;} .tbl td:first-child{width:auto;} }
+    @media print { .tbl, .month, .miss { break-inside:avoid; } }
+  </style>
+</head>
+<body>
+  <main class="deck" aria-label="YourStoriesLive stakeholder presentation">
+    <div class="ambient" aria-hidden="true"></div>
+    <header class="topbar">
+      <div class="brand"><span class="brand-mark" aria-hidden="true">Y</span><span>YourStoriesLive</span></div>
+      <div class="top-meta"><span class="notes-hint">N · speaker notes</span><span>Stakeholder briefing</span><span class="edition">Phase 1 · Release 2.0</span></div>
+    </header>
+
+    <section class="slide cover active" aria-labelledby="slide-title-1">
+      <div class="cover-art" aria-hidden="true"><i class="orbit"></i><i class="orbit"></i><i class="orbit"></i><i class="core"></i><i class="memory a"></i><i class="memory b"></i><i class="memory c"></i></div>
+      <p class="eyebrow">UI modernization · Phase 1 delivery · 9 October 2026</p>
+      <h1 id="slide-title-1">From PHP pages<br><span>to Next.js.</span></h1>
+      <p class="lead">Release 2.0 moves the member experience onto a modern Next.js interface, with a NestJS BFF connecting it to the existing backend. This briefing tells the story of the migration since the project began on 13 July: what Phase 1 delivered, how the screens connect to the backend, and what remains.</p>
+      <div class="cover-meta"><span class="pill">5 of 5 Phase 1 modules built</span><span class="pill">BFF integration in place</span><span class="pill">27 public pages · 9 languages</span></div>
+      <div class="notes"><b>Speaker notes</b>Welcome everyone. For the last three months the team has been rebuilding the YourStoriesLive member experience. We did not start from a blank page: the PHP application is the product reference, and our job was to carry its workflows into a modern interface and make them better on the way. Today I will show what we committed to for Phase 1, what is finished, how it connects to the backend, and what is still open. Where I give numbers, they come from the code and the API inventory as of 9 October.</div>
+    </section>
+    <section class="slide " aria-labelledby="slide-title-2">
+      <p class="eyebrow">01 · Migration status</p><h2 id="slide-title-2">A new UI layer.<br>The backend continues.</h2>
+      
+
+      <div class="intro-row" style="margin-bottom:14px">
+        <p class="story" style="margin:0">The goal is to replace the PHP-rendered experience with Next.js while preserving the established product workflows. The BFF provides the integration boundary between the browser and the existing services, so the new screens never talk to the legacy backend directly.</p>
+        <div class="stat-stack" aria-label="Migration summary"><div class="stat"><strong>5 / 5</strong><span>Core areas</span></div><div class="stat"><strong>27</strong><span>Public pages</span></div><div class="stat"><strong>9</strong><span>Languages</span></div></div>
+      </div>
+      <div class="architecture" aria-label="Application architecture migration">
+        <article class="arch-lane old"><div class="arch-label">Before · PHP experience</div><div class="arch-flow"><div class="arch-node"><b>Browser</b><span>PHP-rendered pages</span></div><span class="arch-arrow">→</span><div class="arch-node"><b>PHP app</b><span>UI and backend calls</span></div></div><p class="arch-caption">The legacy application is the product reference and existing behavior baseline.</p></article>
+        <article class="arch-lane target"><div class="arch-label">Target · Release 2.0</div><div class="arch-flow"><div class="arch-node"><b>Browser</b><span>Next.js UI</span></div><span class="arch-arrow">→</span><div class="arch-node"><b>NestJS BFF</b><span>Web API contract</span></div><span class="arch-arrow">→</span><div class="arch-node"><b>Existing services</b><span>PHP APIs during migration</span></div></div><p class="arch-caption">The BFF sits between the new browser experience and existing operations, giving the UI a consistent API boundary as migration progresses.</p></article>
+      </div>
+      <div class="notes"><b>Speaker notes</b>Think of this slide as the whole strategy in one picture. On the left is where we started: the browser gets pages rendered by the PHP application, which also talks to its own backend. On the right is where we are going: the browser runs a Next.js interface, and every request goes through a NestJS service we call the BFF, which then calls the existing PHP APIs. The important point for stakeholders is that the backend continues to work as it does today. We changed what the member sees and how it is wired, not the business logic behind it. The BFF is also what lets us replace backend pieces later without touching the screens again. The three figures on the right are the headline: all five Phase 1 areas are built, the public website is 27 pages, and everything is available in nine languages.</div>
+    </section>
+    <section class="slide " aria-labelledby="slide-title-15">
+      <p class="eyebrow">02 · The journey</p><h2 id="slide-title-15">What we built,<br>month by month.</h2>
+      <p class="story">Three months, in four steps: lay the foundation, rebuild the core screens, connect them to the backend, then add what the old product could not do.</p>
+
+      <div class="months">
+        <article class="month"><h3>July</h3><div class="sub">78 commits · foundation</div><ul><li>Next.js application, Docker deployment</li><li>Localised public site, 9 languages</li><li>Pages rebuilt to match production</li><li>Sign-in and sign-up; Google sign-in</li><li>Shared forms, theme, tests and CI</li></ul></article>
+        <article class="month"><h3>August</h3><div class="sub">228 commits · core screens</div><ul><li>Password reset; live translation of members’ text</li><li>Photo Gallery: library, edit, bulk actions, sorting</li><li>Timeline, story pages and the story composer</li><li>Facebook, Instagram and Pinterest import</li><li>Settings; Your Life and Moments</li></ul></article>
+        <article class="month"><h3>September</h3><div class="sub">227 commits · connected</div><ul><li>NestJS BFF started (1 Sep)</li><li>Your Advice and Your Reflections</li><li>Contacts and Ancestry on live APIs</li><li>Story collaboration, copy to timeline</li><li>Notifications; profile-completion gate; welcome slides</li></ul></article>
+        <article class="month"><h3>October</h3><div class="sub">68 commits · 1–9 Oct</div><ul><li>Header search and member page</li><li>Photo and timeline filters for members</li><li>Request comments from a contact; keep a story</li><li>Photo requests and comment moderation</li><li>Notification window; developer API tracker; browser tests</li></ul></article>
+      </div>
+      <p class="small-note" style="margin:14px 0 0">601 commits and 171 merges on the web app since 13 July; 168 commits on the BFF since 1 September.</p>
+      <div class="notes"><b>Speaker notes</b>July was foundation: we set up the application, the nine-language public site, the design system and automated tests. August was the core screens: the photo gallery, the timeline and story composer, social imports, settings and the first of the profile. September is when it became connected: the BFF was started on the first of the month, and from then the screens moved onto live backend calls, including contacts, the family tree, collaboration, notifications and the profile-completion gate. October so far has been polish and extension: finding and viewing other members, filters on their pages, asking contacts to comment, keeping a story, photo requests and moderation. The commit counts on the slide are the raw activity for each month.</div>
+    </section>
+    <section class="slide " aria-labelledby="slide-title-3">
+      <p class="eyebrow">03 · Phase 1 scorecard</p><h2 id="slide-title-3">Five committed modules.<br>All five are built.</h2>
+      <p class="story">Phase 1 meant finishing the core signed-in application before touching the bug backlog. These are the five modules we committed to, and what each one now delivers. The next slides take them one at a time.</p>
+
+      <div class="grid two" style="margin-top:6px">
+        <article class="card" style="min-height:0"><h3>Ancestry</h3><p>An interactive family tree on desktop and a focused view on mobile. Members add a father, mother, sibling, spouse or child, edit details, remove relatives, and see a contact’s tree read-only.</p></article>
+        <article class="card" style="min-height:0"><h3>Profile · Reflections · Advice</h3><p>Sixteen guided life-stage questions, Moments for education and milestones, written or recorded Advice with transcripts, and Reflections about the people in a member’s life.</p></article>
+        <article class="card" style="min-height:0"><h3>Timeline &amp; Stories</h3><p>A life timeline grouped by stage with search and filters, a story composer for text, audio, video and photos, audience control, and the full comment-and-copy collaboration with contacts.</p></article>
+        <article class="card" style="min-height:0"><h3>Photo Gallery</h3><p>A monthly library with upload and Facebook, Instagram and Pinterest import, captions, links to stories and contacts, sharing in both directions, and comments on photos.</p></article>
+        <article class="card" style="min-height:0"><h3>Profile Completion</h3><p>A required-details gate, personal information and photo editing, and a completion percentage with per-life-stage progress that guides the next step.</p></article>
+      </div>
+      <div class="notes"><b>Speaker notes</b>We committed to five modules for Phase 1: Ancestry, Profile with Reflections and Advice, Timeline, Photo Gallery and Profile Completion. All five are built and working against the real backend. This slide is the one-line version of each; the next five slides give the detail. The point to make is that these are not mock-ups: each module reads and writes real member data through the BFF.</div>
+    </section>
+    <section class="slide" aria-labelledby="slide-title-4">
+      <p class="eyebrow">04 · Phase 1 · Ancestry</p><h2 id="slide-title-4" style="margin-bottom:6px">Ancestry</h2>
+      <p class="story">The family tree keeps the established workflow and adds a focused mobile view. Members build their tree relative by relative, and can see a contact’s tree read-only.</p>
+      <div class="grid two" style="margin-top:6px"><article class="card" style="min-height:0"><h3>An interactive family tree</h3><p>Members see their family as a tree on desktop and as a focused, easier-to-read view on a phone. The page also links to Contacts and to privacy settings so a relative can be turned into a contact.</p></article><article class="card" style="min-height:0"><h3>Add a relative</h3><p>Add a father, mother, sibling, spouse or child with name, relationship, dates and a photo. Minors can be added with a guardian’s details.</p></article><article class="card" style="min-height:0"><h3>Edit a relative</h3><p>Any detail can be changed; the form opens with everything already filled in.</p></article><article class="card" style="min-height:0"><h3>Remove a relative</h3><p>Removing someone asks for confirmation first, and the change is saved to the backend.</p></article><article class="card" style="min-height:0"><h3>A contact’s tree</h3><p>On a contact’s profile, their tree is shown read-only, and the tab appears only when they have family to show.</p></article></div>
+      <div class="notes"><b>Speaker notes</b>Ancestry is where a member records who is in their family. On a desktop it is the full interactive tree; on a phone it is a view designed for small screens, because a wide tree does not fit on one. Members can add a father, mother, sibling, spouse or child, edit any of them with the form already filled in, and remove someone after a confirmation. On a contact’s profile you can see their tree, read-only. Two things are not built yet: choosing an existing contact from a dropdown to place them in the tree, and sharing the tree as a link.</div>
+    </section>
+    <section class="slide" aria-labelledby="slide-title-5">
+      <p class="eyebrow">05 · Phase 1 · Profile, Reflections & Advice</p><h2 id="slide-title-5" style="margin-bottom:6px">Profile · Reflections · Advice</h2>
+      <p class="story">Profile is where members tell their life story: sixteen guided questions, important moments, advice for the people they care about, and reflections on the people in their lives, in writing or on camera.</p>
+      <div class="grid two" style="margin-top:6px"><article class="card" style="min-height:0"><h3>Your Life</h3><p>Sixteen questions, shown for the life stages a member has reached (childhood, young adult, adult, senior). Each can have several answers with photos, audio or video, and each answer can be edited or deleted.</p></article><article class="card" style="min-height:0"><h3>Skip, bring back and carry forward</h3><p>A question that does not apply can be turned off and brought back later, and a stage’s answers can be copied forward to the next stage.</p></article><article class="card" style="min-height:0"><h3>Smart suggestions</h3><p>For books, songs, artists, TV shows and films, actors, restaurants and sports teams, the app offers a match with a cover and details to attach to the answer.</p></article><article class="card" style="min-height:0"><h3>Your Moments</h3><p>Education (level, institution, years, location, notes) and important dated milestones with photos or videos. They also appear on the timeline.</p></article><article class="card" style="min-height:0"><h3>Your Advice</h3><p>Advice on topics, written or recorded on camera, with automatic transcripts. Each entry is dated and can be opened, played or deleted.</p></article><article class="card" style="min-height:0"><h3>Reflections</h3><p>A written, recorded or uploaded memory about a contact, who is notified by email. Members also see reflections others wrote about them and can hide or show each one.</p></article><article class="card" style="min-height:0"><h3>Reading another member’s story</h3><p>On a contact’s page, their chapters and advice are shown read-only, with resolved names, authors and birthdays.</p></article></div>
+      <div class="notes"><b>Speaker notes</b>This is the heart of the product for most members. Your Life asks sixteen questions, shown only for the life stages the member has reached, so a young member does not see questions meant for later in life. Answers can include photos, audio or video, and members can turn a question off if it does not apply. When someone types a book, a song or a film, the app offers a match with a cover and details. Moments captures education and important dates, which also appear on the timeline. Advice lets a member leave written or recorded advice on topics, with automatic transcripts. Reflections are short memories about a specific person; members can also see what others wrote about them and hide any of it. On a contact’s page the same content is shown read-only. Not built yet: a latest-reflection card on the dashboard.</div>
+    </section>
+    <section class="slide" aria-labelledby="slide-title-6">
+      <p class="eyebrow">06 · Phase 1 · Timeline & Stories</p><h2 id="slide-title-6" style="margin-bottom:6px">Timeline & Stories</h2>
+      <p class="story">The timeline preserves the story lifecycle and adds clear navigation across life stages. Stories can be shared with contacts for comments, and the migration keeps that whole conversation connected.</p>
+      <div class="grid two" style="margin-top:6px"><article class="card" style="min-height:0"><h3>A timeline of the member’s life</h3><p>Stories grouped by life stage, with search, filters for content, life stage and tags, a jump-to row, and loading as the member scrolls. On a phone the filters collapse into a window.</p></article><article class="card" style="min-height:0"><h3>The story composer</h3><p>Tell a story by writing, uploading audio or video, or recording in the browser. Add photos from the library or from Facebook, Instagram and Pinterest, get an automatic transcript, and set the date, life period and place.</p></article><article class="card" style="min-height:0"><h3>Choose who can see it</h3><p>Public, Private or Secret, with a short explanation of what each means. Stories can be edited or deleted later.</p></article><article class="card" style="min-height:0"><h3>Request comments</h3><p>Pick contacts, or add a new one on the spot, and allow each to keep a copy. Invitations go out by email.</p></article><article class="card" style="min-height:0"><h3>Comment without an account</h3><p>An invitee opens the emailed link, reads the story and what others said, then comments with text, photos, video or audio, or declines.</p></article><article class="card" style="min-height:0"><h3>Review and moderate</h3><p>The owner approves or hides comments, deletes them, asks for a revision that starts from what was already written, or invites someone again. Dashboard lists show invitations and contributions.</p></article><article class="card" style="min-height:0"><h3>Copy and keep a story</h3><p>A contributor allowed to copy keeps it on their own timeline, with the original author shown. Otherwise they ask the owner, who answers from the email or notification.</p></article></div>
+      <div class="notes"><b>Speaker notes</b>The timeline is the member’s life laid out in order, grouped by life stage, with search and filters and a jump-to row so they can reach a period quickly. Stories can be written, or told by uploading or recording audio or video, with photos, and members choose who can see each one. The collaboration part is what makes this more than a list: the owner invites contacts to comment, an invitee can open the emailed link without an account, comment with text, photos, audio or video, or decline, and the owner can review, hide, ask for a revision or invite again. If the owner allowed it, the invitee can keep a copy on their own timeline; if not, they can ask the owner, who answers from the email.</div>
+    </section>
+    <section class="slide" aria-labelledby="slide-title-7">
+      <p class="eyebrow">07 · Phase 1 · Photo Gallery</p><h2 id="slide-title-7" style="margin-bottom:6px">Photo Gallery</h2>
+      <p class="story">The gallery moves beyond a simple upload list: it keeps media connected to stories, contacts and sharing workflows.</p>
+      <div class="grid two" style="margin-top:6px"><article class="card" style="min-height:0"><h3>The library</h3><p>Photos and videos grouped by month, with sort by date, filters and search. Counts and month headings match exactly what can be shown.</p></article><article class="card" style="min-height:0"><h3>Photo details</h3><p>Open a photo to see and edit who, when, where and caption, and the stories it appears in. One caption can be applied to a whole selection.</p></article><article class="card" style="min-height:0"><h3>Upload and import</h3><p>Large files upload in parts. Photos can be imported from Facebook, Instagram and Pinterest, and recordings get an automatic transcript.</p></article><article class="card" style="min-height:0"><h3>Connect photos to stories and contacts</h3><p>Add a selection to a story or start a new story from it, attach photos to a contact, or create a contact from the dialog.</p></article><article class="card" style="min-height:0"><h3>Delete with care</h3><p>Before a photo is deleted the member sees which stories and contacts it is linked to.</p></article><article class="card" style="min-height:0"><h3>Share and request</h3><p>Share with contacts; approve or deny what is “Shared with you” and what is “Requested from you”; request photos from another member.</p></article><article class="card" style="min-height:0"><h3>Another member’s photos</h3><p>“Organized groups” tiles, search by story name, life-stage filter, group by stories, sort, and a viewer showing when each photo was added, taken and where.</p></article><article class="card" style="min-height:0"><h3>Photo comments</h3><p>Visitors can comment on a photo, and owners see every comment on their own photos and can hide or show each one; a hidden comment stays listed, dimmed.</p></article></div>
+      <div class="notes"><b>Speaker notes</b>Photo Gallery goes well beyond an upload list. Photos are shown by month and can be searched, filtered and sorted. Members can upload large files in parts, or import from Facebook, Instagram and Pinterest, then caption photos, attach them to a story or to a contact, and share them with other members. Before a photo is deleted, the member is shown exactly what it is linked to. Sharing works in both directions: photos shared with you, and photos other members have requested from you, each with Approve and Deny. On another member’s profile you can browse their photos, narrow them down, and request photos from them. Comments on photos can be hidden or shown by the owner.</div>
+    </section>
+    <section class="slide" aria-labelledby="slide-title-8">
+      <p class="eyebrow">08 · Phase 1 · Profile Completion</p><h2 id="slide-title-8" style="margin-bottom:6px">Profile Completion</h2>
+      <p class="story">Profile completion now guides members to missing required details, and shows how far through their life story they are.</p>
+      <div class="grid two" style="margin-top:6px"><article class="card" style="min-height:0"><h3>Required-details gate</h3><p>A member needs a name, email, date of birth and phone number to use most of the app. If something is missing they are taken to Settings with a clear message.</p></article><article class="card" style="min-height:0"><h3>Personal information</h3><p>Edit name, date of birth, phone, bio and social links, plus optional gender, race and ethnicity. A first save creates the profile.</p></article><article class="card" style="min-height:0"><h3>Profile photo</h3><p>Upload a photo with a square crop, or remove it.</p></article><article class="card" style="min-height:0"><h3>Completion and progress</h3><p>The profile shows an overall completion percentage and a progress bar for each life stage, and dashboard prompts point to the next thing to do.</p></article></div>
+      <div class="notes"><b>Speaker notes</b>A profile that is missing basics causes problems elsewhere in the product, so we made completion explicit. A member needs a name, email, date of birth and phone number before they can use most of the app; if something is missing they are taken to Settings with a clear message. Once those are filled in, the profile page shows an overall completion percentage and a progress bar for each life stage, and the dashboard points to the next thing to do. Saving a postal address is the one piece not built yet.</div>
+    </section>
+    <section class="slide " aria-labelledby="slide-title-10">
+      <p class="eyebrow">09 · Authentication</p><h2 id="slide-title-10">One session contract<br>across login methods.</h2>
+      <p class="story">Members can sign in many ways. Whichever way they arrive, the new application gives them the same kind of session.</p>
+
+      <div class="sequence" aria-label="Authentication flow through the BFF"><div class="step"><b>Authenticate</b><span>Password, social, email/SMS code or invitation link</span></div><span class="arrow">→</span><div class="step"><b>Map legacy response</b><span>BFF translates PHP fields into the Next.js contract</span></div><span class="arrow">→</span><div class="step"><b>Issue BFF session</b><span>Access and refresh tokens preserve the account identity</span></div><span class="arrow">→</span><div class="step"><b>Continue</b><span>Refresh restores a valid session and destination</span></div></div>
+      <div class="grid three" style="margin-top:14px">
+        <article class="card"><div class="icon">⇢</div><h3>Legacy compatibility</h3><p>PHP session credentials are retained where needed while the browser uses the BFF-issued API session.</p></article>
+        <article class="card"><div class="icon">◉</div><h3>Identity continuity</h3><p>The account identity is carried through sign-in, sign-up, social, OTP and contribution-token authentication.</p></article>
+        <article class="card"><div class="icon">⌕</div><h3>Traceable handoff</h3><p>The BFF logs the captured account ID for verification without logging session credentials.</p></article>
+      </div>
+      <div class="banner"><strong>Why the BFF matters</strong><span>It gives Next.js a consistent authentication contract while the existing PHP APIs remain behind the migration boundary.</span></div>
+      <div class="notes"><b>Speaker notes</b>Members can come in with an email and password, with Google, Facebook, Kakao or Naver, with a verification code by SMS or email, or through an invitation link. The PHP backend returns data for each of these in its own format. The BFF translates all of them into one consistent session, so the interface does not need to know which route a member took. A quiet refresh keeps them signed in, and if a session does expire they are returned to where they were. This is also where the BFF earns its place: the old backend stays behind it while the browser only ever speaks one contract.</div>
+    </section>
+    <section class="slide " aria-labelledby="slide-title-11">
+      <p class="eyebrow">10 · Beyond Phase 1 · Accounts, Settings & Contacts</p><h2 id="slide-title-11">Also complete:<br>accounts and contacts.</h2>
+      <p class="story">Beyond the five Phase 1 modules, the supporting pages that members rely on every day are also built.</p>
+
+      <div class="grid two" style="margin-top:6px">
+        <article class="card" style="min-height:0"><h3>Sign-up, sign-in and passwords</h3><p>Email and password with an optional second step by SMS or email code; sign-in with Google, Facebook, Kakao or Naver; forgot-password with a code; quiet session refresh; a password prompt for people who join by invitation.</p></article>
+        <article class="card" style="min-height:0"><h3>Settings</h3><p>Hide from search, choose the default audience for new stories, turn on two-step verification, change the password, and see the account’s guardian status and administrator (executor).</p></article>
+        <article class="card" style="min-height:0"><h3>Contacts</h3><p>A searchable, sortable list with a relationship filter; add with a photo, edit and delete; set an access level; ask for, approve, reject or revoke access; tabs for stories commented, photos, deliveries and reflections; and Request Comments for chosen stories.</p></article>
+        <article class="card" style="min-height:0"><h3>Find people and visit their page</h3><p>The header search finds a member by name or email, with View and Connect. A member’s page shows Timeline, Chapters, Advice, Ancestry, Photos and Reflections, with filters, photo requests, comments and “add a reflection”.</p></article>
+      </div>
+      <div class="notes"><b>Speaker notes</b>These pages are outside the Phase 1 list but the product needs them. Accounts cover sign-up, sign-in, password reset and two-step verification. Settings lets members decide who can find them and who can see their stories by default, change their password, and see who is their administrator. Contacts is a full page: search, sort, add with a photo, edit, delete, set the access level, and ask for or grant access, plus asking a contact to comment on selected stories. Header search lets a member find another member by name or email and open their page; it works on larger screens today. Not built yet: appointing an executor, and adding a person met on another member’s page to your contacts.</div>
+    </section>
+    <section class="slide " aria-labelledby="slide-title-12">
+      <p class="eyebrow">11 · Beyond Phase 1 · Other pages</p><h2 id="slide-title-12">Also complete:<br>the rest of the app.</h2>
+      <p class="story">The dashboard, notifications and the welcome experience complete the day-to-day journey around the Phase 1 modules.</p>
+
+      <div class="grid two" style="margin-top:6px">
+        <article class="card" style="min-height:0"><h3>Dashboard</h3><p>A personal greeting, a memory highlight, story, gift, advice and profile-progress cards, people from contacts, and invitations received and sent.</p></article>
+        <article class="card" style="min-height:0"><h3>Notifications</h3><p>Each notification opens as the email it was sent as, is marked read when opened, and links to the item. Members can mark all as read, hide or clear all, and see an unread dot.</p></article>
+        <article class="card" style="min-height:0"><h3>Welcome slides</h3><p>Three slides after sign-up with Continue and Skip, remembered per browser.</p></article>
+        <article class="card" style="min-height:0"><h3>Contact us</h3><p>A validated form on the public site whose message reaches the team, with translated confirmation and errors.</p></article>
+        <article class="card" style="min-height:0"><h3>Collaboration by email</h3><p>Invited people open a story, comment or decline, keep a copy, or answer a request to keep a story, with no account needed.</p></article>
+        <article class="card" style="min-height:0"><h3>Public website</h3><p>27 pages in nine languages, including seven search-engine landing pages.</p></article>
+      </div>
+      <div class="notes"><b>Speaker notes</b>The dashboard is where a member lands: a greeting, a memory highlight, counts of stories, gifts and advice, who is in their circle, and invitations waiting. Notifications now open as the email they were sent as, are marked read as you open them, and members can mark everything read or clear it. The welcome slides appear once after sign-up. Contact us is the one public page that talks to the backend, sending a message to the team.</div>
+    </section>
+    <section class="slide " aria-labelledby="slide-title-14">
+      <p class="eyebrow">12 · Backend integration</p><h2 id="slide-title-14">What is integrated,<br>and what is not.</h2>
+      <p class="story">Every screen reaches the backend through the BFF. This is where the migration stands against the original PHP operations.</p>
+
+      <div class="grid three" style="margin-top:6px">
+        <article class="card"><div class="icon">⇄</div><h3>126 of 150 backend routes</h3><p>Called by a screen today. 12 of the 24 that are not are in Phase 1 modules; 12 are in other areas.</p><span class="tag">Routes</span></article>
+        <article class="card"><div class="icon">▤</div><h3>133 of 195 Postman operations</h3><p>Operations recorded from the existing PHP backend that the new app now performs.</p><span class="tag">Operations</span></article>
+        <article class="card"><div class="icon">⌗</div><h3>62 operations still open</h3><p>32 have no backend route yet, 23 have a route but no screen, and 7 are AI operations not connected.</p><span class="tag">Gap</span></article>
+      </div>
+      <table class="tbl"><thead><tr><th>Still open</th><th>Operations</th><th>Reason</th></tr></thead><tbody><tr><td>Gifts and Messages</td><td>15</td><td>No backend module yet; screen is a layout only</td></tr><tr><td>Concierge</td><td>9</td><td>No backend module yet; screen is a layout only</td></tr><tr><td>Pricing and plan upgrade</td><td>3</td><td>No backend module yet; no purchase flow</td></tr><tr><td>Executor appointment and responsibilities</td><td>6 routes</td><td>Backend built; no screens</td></tr><tr><td>Add person from another member’s page to contacts</td><td>3 routes</td><td>Backend built; no screen</td></tr><tr><td>Other legacy operations</td><td>5</td><td>Dashboard connections list, network-data edit and delete, executor contact list and add</td></tr><tr><td>AI operations</td><td>7</td><td>Education details, image metadata, tags, bio, historical event, concierge prompt, audio to speech</td></tr></tbody></table>
+      <p class="small-note" style="margin:10px 0 0">Not counted: the 9 operations in the “AI APIs NOT IN USE” collection, and the request Postman itself names “Not in use”.</p>
+      <div class="notes"><b>Speaker notes</b>Two ways of counting. First, routes: the BFF has 150 routes, and 126 are called by a screen today. Second, operations: the existing PHP backend’s operations were recorded in Postman. We leave out what Postman itself labels as not in use. Of the 195 that remain, the new application performs 133. The remaining operations fall into three groups. For 32 there is no backend module yet, and the largest are Gifts and Messages, Concierge and Pricing, which are whole areas we have not started on the backend side. For 23 the backend route is ready but no screen uses it, mainly the executor flows and a few contact helpers. And 7 are AI operations we have not connected. Nothing in this table is a surprise; it is the list of what comes after Phase 1.</div>
+    </section>
+    <section class="slide " aria-labelledby="slide-title-16">
+      <p class="eyebrow">13 · Validation</p><h2 id="slide-title-16">Tested at every layer.</h2>
+      <p class="story">We measure the migration by coverage across the interface, the API layer and the journeys a member takes.</p>
+
+      <div class="grid three" style="margin-top:7px">
+        <article class="card"><div class="icon">✓</div><h3>Automated tests</h3><p>5,161 web-app tests in 423 suites and 1,601 BFF tests in 67 suites, all passing on the latest code, with the coverage shown below.</p><span class="tag">Quality</span></article>
+        <article class="card"><div class="icon">▣</div><h3>Browser journeys</h3><p>12 end-to-end specs cover public pages and signed-in flows: profile, advice, reflections, timeline, comments, contacts and dashboard.</p><span class="tag">Experience</span></article>
+        <article class="card"><div class="icon">⌗</div><h3>Screen-to-API map</h3><p>A maintained inventory ties each screen to its backend calls and lists the gaps, with a live API tracker for developers.</p><span class="tag">Traceability</span></article>
+      </div>
+      <table class="tbl"><thead><tr><th>Test coverage</th><th class="n">Statements</th><th class="n">Branches</th><th class="n">Functions</th><th class="n">Lines</th></tr></thead><tbody><tr><td>Web application (all source)</td><td class="n">97.6%</td><td class="n">91.4%</td><td class="n">92.4%</td><td class="n">97.6%</td></tr><tr><td>BFF (service and utility code)</td><td class="n">93.3%</td><td class="n">74.7%</td><td class="n">91.6%</td><td class="n">93.2%</td></tr></tbody></table>
+      <p class="small-note" style="margin:6px 0 0">Measured 9 October 2026 on the latest code. Web-app coverage covers all application source (the project minimum is 70%); BFF coverage is measured on its service and utility files, the part of the code where the project sets a 90% target.</p>
+
+      <div class="notes"><b>Speaker notes</b>Quality has three layers. Automated tests check each piece: over five thousand on the web application and over sixteen hundred on the BFF, all passing today. Coverage is high on the web application, about 98 percent of statements and 91 percent of branches. On the BFF, the service and utility code is about 93 percent covered for statements and 92 percent for functions; branch coverage there is lower, about 75 percent, and is an area to improve. Browser tests walk the real journeys, such as signing in and writing a reflection. And a maintained map ties every screen to the backend calls it depends on, which is how I can give you the integration numbers with confidence.</div>
+    </section>
+    <section class="slide " aria-labelledby="slide-title-17">
+      <p class="eyebrow">14 · Remaining gaps</p><h2 id="slide-title-17">What still needs a decision,<br>backend support or UI?</h2>
+      <p class="story">These are the known gaps. None blocks the Phase 1 modules; each needs a decision, backend work or a screen.</p>
+
+      <div class="open-grid">
+        <article class="open-item"><span class="number">01</span><div><strong>Gifts, Messages and Concierge</strong><p>Layouts only. About 24 operations, plus 3 for pricing, have no backend yet.</p></div></article>
+        <article class="open-item"><span class="number">02</span><div><strong>Billing</strong><p>No purchase or upgrade flow; plan limits are not shown to members.</p></div></article>
+        <article class="open-item"><span class="number">03</span><div><strong>Search and discovery</strong><p>“Ask to view” has no action; search is not on phones; results show email and birth date.</p></div></article>
+        <article class="open-item"><span class="number">04</span><div><strong>Settings</strong><p>Connected accounts is inactive; appointing an executor is not available.</p></div></article>
+        <article class="open-item"><span class="number">05</span><div><strong>Member photos</strong><p>Search and life stage cannot be combined; a visitor sees only comments posted this session.</p></div></article>
+        <article class="open-item"><span class="number">06</span><div><strong>Welcome and public site</strong><p>Welcome slides are per browser; no guided tour; no cookie banner; one resource article; landing pages English only.</p></div></article>
+        <article class="open-item"><span class="number">07</span><div><strong>Profile polish</strong><p>Some save and delete failures give no message; editing an Important Moment can show an empty date.</p></div></article>
+        <article class="open-item"><span class="number">08</span><div><strong>Four Phase 1 screens</strong><p>Place a contact in the tree, share the tree, latest-reflection card and save address.</p></div></article>
+      </div>
+      <div class="notes"><b>Speaker notes</b>I want to be open about what is not done. The largest items are whole areas that need backend work first: Gifts and Messages, Concierge and Billing. Then there are product decisions: search currently shows an email and birth date for each result, which we restored to match the old console but which exposes personal information, and “Ask to view” does nothing yet. A few settings features, like appointing an executor, are not available. There is also polish: a few save and delete failures on the profile give no message to the member. And four Phase 1 screens are pending: placing a contact in the family tree, sharing the tree, a latest-reflection card on the dashboard, and saving an address.</div>
+    </section>
+    <section class="slide close-slide" aria-labelledby="slide-title-19">
+      <p class="eyebrow">YourStoriesLive · Release 2.0 · Phase 1</p>
+      <p class="closing-statement" id="slide-title-19">The Next.js experience is taking shape.<br><em>Let’s align on the next migration increment.</em></p>
+      <p class="lead" style="margin-top:17px">Migration progress · remaining gaps · next release</p>
+      <div class="cover-meta" style="margin-top:10px"><span class="pill">Thank you</span><span class="pill">9 October 2026</span></div>
+    </section>
+
+    <footer class="footer">
+      <div class="progress-wrap"><span class="counter" id="counter" aria-live="polite">01 / 00</span><div class="progress-track" aria-hidden="true"><div class="progress-fill" id="progress"></div></div></div>
+      <div class="controls" aria-label="Presentation controls">
+        <span class="nav-hint">← → navigate · F full screen</span>
+        <button class="control" id="prev" aria-label="Previous slide" title="Previous slide">←</button>
+        <button class="control" id="next" aria-label="Next slide" title="Next slide">→</button>
+      </div>
+    </footer>
+    <div class="sr-only" id="announcement" aria-live="polite"></div>
+  </main>
+  <script>
+    (() => {
+      const slides = Array.from(document.querySelectorAll('.slide'));
+      const counter = document.getElementById('counter');
+      const progress = document.getElementById('progress');
+      const prev = document.getElementById('prev');
+      const next = document.getElementById('next');
+      const announcement = document.getElementById('announcement');
+      let current = 0;
+
+      function showSlide(index) {
+        current = Math.max(0, Math.min(slides.length - 1, index));
+        slides.forEach((slide, position) => {
+          const active = position === current;
+          slide.classList.toggle('active', active);
+          slide.setAttribute('aria-hidden', String(!active));
+        });
+        const number = String(current + 1).padStart(2, '0');
+        counter.textContent = `${number} / ${String(slides.length).padStart(2, '0')}`;
+        progress.style.width = `${((current + 1) / slides.length) * 100}%`;
+        prev.disabled = current === 0;
+        next.disabled = current === slides.length - 1;
+        announcement.textContent = `Slide ${current + 1} of ${slides.length}: ${slides[current].querySelector('h1, h2')?.textContent ?? ''}`;
+        history.replaceState(null, '', `#slide-${current + 1}`);
+      }
+
+      prev.addEventListener('click', () => showSlide(current - 1));
+      next.addEventListener('click', () => showSlide(current + 1));
+      document.addEventListener('keydown', (event) => {
+        if (event.altKey || event.ctrlKey || event.metaKey) return;
+        if (['ArrowRight', 'PageDown', ' '].includes(event.key)) { event.preventDefault(); showSlide(current + 1); }
+        if (['ArrowLeft', 'PageUp'].includes(event.key)) { event.preventDefault(); showSlide(current - 1); }
+        if (event.key === 'Home') showSlide(0);
+        if (event.key === 'End') showSlide(slides.length - 1);
+        if (event.key.toLowerCase() === 'n') document.body.classList.toggle('show-notes');
+        if (event.key.toLowerCase() === 'f') {
+          if (!document.fullscreenElement) document.documentElement.requestFullscreen?.();
+          else document.exitFullscreen?.();
+        }
+      });
+      const initial = Number(location.hash.match(/slide-(\d+)/)?.[1]);
+      showSlide(Number.isFinite(initial) && initial > 0 ? initial - 1 : 0);
+    })();
+  </script>
+</body>
+</html>
+

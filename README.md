@@ -43,7 +43,7 @@ Do not add credentials, environment files, signed media URLs, user data, HARs,
 database dumps or runtime/application code. A public Pages site and public
 repository are visible to anyone.
 
-The initial guide copies came from `back-end/guides/`. Original application
+The guide copies came from `back-end/guides/` and `yourstorieslive/app-info/`. Original application
 guides remain separate; this repository is the maintained publishing copy.
 Local workstation paths and the legacy-host example are generalized in the
 copied Markdown. Links to application source outside the guide collection are

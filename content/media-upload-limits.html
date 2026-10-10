@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>YourStoriesLive media upload limits</title>
+    <style>
+      :root {
+        color-scheme: light;
+        font-family:
+          Inter,
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          'Segoe UI',
+          sans-serif;
+        color: #2f2438;
+        background: #f7f3f8;
+      }
+
+      body {
+        margin: 0;
+        padding: 32px 18px;
+      }
+
+      main {
+        max-width: 1120px;
+        margin: 0 auto;
+        padding: clamp(24px, 5vw, 56px);
+        border: 1px solid #e5dce9;
+        border-radius: 24px;
+        background: #fff;
+        box-shadow: 0 20px 60px rgb(64 37 80 / 8%);
+      }
+
+      h1,
+      h2 {
+        color: #48256d;
+      }
+
+      h1 {
+        margin: 0 0 8px;
+        font-family: Georgia, 'Times New Roman', serif;
+        font-size: clamp(2rem, 5vw, 3.25rem);
+      }
+
+      h2 {
+        margin-top: 36px;
+      }
+
+      .reviewed {
+        margin: 0 0 24px;
+        color: #75677e;
+      }
+
+      .table-wrap {
+        overflow-x: auto;
+        border: 1px solid #e5dce9;
+        border-radius: 16px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 760px;
+      }
+
+      th,
+      td {
+        padding: 14px 16px;
+        border-bottom: 1px solid #eee7f1;
+        text-align: left;
+        vertical-align: top;
+      }
+
+      th {
+        color: #48256d;
+        background: #f8f4fa;
+        font-size: 0.85rem;
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
+      }
+
+      tbody tr:last-child td {
+        border-bottom: 0;
+      }
+
+      code {
+        padding: 2px 6px;
+        border-radius: 6px;
+        color: #5d3482;
+        background: #f3edf7;
+      }
+
+      .status {
+        display: inline-block;
+        padding: 4px 9px;
+        border-radius: 999px;
+        color: #276247;
+        background: #eaf7f0;
+        font-size: 0.85rem;
+        font-weight: 700;
+        white-space: nowrap;
+      }
+
+      .status.strict {
+        color: #694c16;
+        background: #fff4d8;
+      }
+
+      li + li {
+        margin-top: 8px;
+      }
+
+      .sources {
+        padding: 18px 20px;
+        border-radius: 14px;
+        background: #f8f4fa;
+      }
+
+      @media (max-width: 640px) {
+        body {
+          padding: 0;
+          background: #fff;
+        }
+
+        main {
+          padding: 24px 16px 40px;
+          border: 0;
+          border-radius: 0;
+          box-shadow: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Media upload limits</h1>
+      <p class="reviewed">Last reviewed: 27 September 2026</p>
+      <p>
+        This page records the file-size limits enforced by the YourStoriesLive
+        frontend and the corresponding values sent by the BFF to the legacy
+        media service. The UI formats these binary byte limits with an
+        <code>MB</code> label.
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Application area</th>
+              <th>Destination key</th>
+              <th>Frontend limit</th>
+              <th>BFF limit</th>
+              <th>Contract status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Photos and media library</td>
+              <td><code>photo_gallery</code></td>
+              <td>200 MiB</td>
+              <td>200 MiB</td>
+              <td><span class="status">Aligned</span></td>
+            </tr>
+            <tr>
+              <td>New Story audio and video</td>
+              <td><code>story</code></td>
+              <td>300 MiB</td>
+              <td>300 MiB</td>
+              <td><span class="status">Aligned</span></td>
+            </tr>
+            <tr>
+              <td>Your Advice and life-answer media</td>
+              <td><code>user_liking</code></td>
+              <td>300 MiB</td>
+              <td>300 MiB</td>
+              <td><span class="status">Aligned</span></td>
+            </tr>
+            <tr>
+              <td>Your Reflections</td>
+              <td><code>network_data</code></td>
+              <td>300 MiB</td>
+              <td>300 MiB</td>
+              <td><span class="status">Aligned</span></td>
+            </tr>
+            <tr>
+              <td>Story contributions</td>
+              <td><code>entity_contribution</code></td>
+              <td>300 MiB</td>
+              <td>300 MiB</td>
+              <td><span class="status">Aligned</span></td>
+            </tr>
+            <tr>
+              <td>Profile photo</td>
+              <td><code>user_profile</code></td>
+              <td>20 MiB</td>
+              <td>200 MiB</td>
+              <td>
+                <span class="status strict"
+                  >Frontend intentionally stricter</span
+                >
+              </td>
+            </tr>
+            <tr>
+              <td>Contact profile photo</td>
+              <td><code>contact_photo</code></td>
+              <td>20 MiB</td>
+              <td>200 MiB</td>
+              <td>
+                <span class="status strict"
+                  >Frontend intentionally stricter</span
+                >
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>Related behavior</h2>
+      <ul>
+        <li>
+          Files are uploaded in 20 MiB chunks. This is a transport chunk size,
+          not a total-file limit.
+        </li>
+        <li>New Story live recording shows its accumulated size.</li>
+        <li>
+          New Story recording automatically stops at approximately 285 MiB, or
+          95% of its 300 MiB hard limit, to reserve space for the final media
+          chunk and container metadata.
+        </li>
+        <li>
+          The completed recording is retained for preview and upload after an
+          automatic stop.
+        </li>
+        <li>
+          The marketed two-minute recording duration is not currently enforced
+          by the recorder.
+        </li>
+      </ul>
+
+      <h2>Source locations</h2>
+      <div class="sources">
+        <ul>
+          <li>
+            Frontend destination limits:
+            <code>src/lib/api/services/media-upload/media-upload.ts</code>
+          </li>
+          <li>
+            BFF legacy upload configuration:
+            <code
+              >../yourstories-live-api/src/modules/media/legacy/media-upload-legacy.model.ts</code
+            >
+          </li>
+          <li>
+            Story live-recording guard:
+            <code>src/components/ui/use-media-recorder.ts</code>
+          </li>
+        </ul>
+      </div>
+    </main>
+  </body>
+</html>
+
