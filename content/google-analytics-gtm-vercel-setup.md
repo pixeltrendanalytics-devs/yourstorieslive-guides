@@ -8,9 +8,10 @@ resources created, the configuration applied, how the frontend connects to them,
 and how to verify and operate the integration later.
 
 **Current status:** the Google-side setup is complete and GTM version 2 is
-published. The frontend integration is still local on
-`feature/ga4-base-traffic-sources`, disabled by configuration. It has not been
-committed, pushed or deployed as part of this setup. Publishing GTM does not
+published. The frontend integration is committed and pushed on
+`feature/ga4-base-traffic-sources`, with [frontend PR 8](https://github.com/pixeltrendanalytics-devs/yourstorieslive/pull/8)
+open against `main`. Analytics remains disabled by configuration, and the
+integration has not been deployed as part of this setup. Publishing GTM does not
 install tracking on the website. Live collection and attribution still require
 deployment and browser verification.
 
