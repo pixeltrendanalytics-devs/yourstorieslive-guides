@@ -3,6 +3,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createHash } from 'node:crypto';
 import { Marked } from 'marked';
+import { renderApiReference } from './render-api-reference.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const output = path.join(root, 'dist');
@@ -14,9 +15,11 @@ const destination = file => `${file.endsWith('.md') ? 'reference' : 'guides'}/${
 const categories = [...new Set(guides.map(guide => guide.category))];
 const stylesheet = await readFile(path.join(root, 'site', 'assets', 'site.css'));
 const browserScript = await readFile(path.join(root, 'site', 'assets', 'site.js'));
+const apiBrowserScript = await readFile(path.join(root, 'site', 'assets', 'api-reference.js'));
 const assetName = (name, bytes) => `site.${createHash('sha256').update(bytes).digest('hex').slice(0, 12)}.${name}`;
 const stylesheetName = assetName('css', stylesheet);
 const browserScriptName = assetName('js', browserScript);
+const apiBrowserScriptName = assetName('js', apiBrowserScript);
 
 for (const guide of catalog) {
   if (!sources.has(guide.file)) throw new Error(`Missing content: ${guide.file}`);
@@ -66,6 +69,7 @@ await mkdir(path.join(output, 'sources'), { recursive: true });
 await cp(path.join(root, 'site', 'assets'), path.join(output, 'assets'), { recursive: true });
 await writeFile(path.join(output, 'assets', stylesheetName), stylesheet);
 await writeFile(path.join(output, 'assets', browserScriptName), browserScript);
+await writeFile(path.join(output, 'assets', apiBrowserScriptName), apiBrowserScript);
 await writeFile(path.join(output, 'index.html'), document('Guides library', home.replace('src="assets/site.js"', `src="assets/${browserScriptName}"`)));
 await writeFile(path.join(output, '.nojekyll'), '');
 
@@ -94,11 +98,18 @@ for (const guide of catalog) {
     } });
     let rendered = markdown.parse(source);
     rendered = rendered.replace(/<table>[\s\S]*?<\/table>/g, table => `<div class="table-scroll">${table}</div>`);
+    if (guide.apiReference) {
+      if (!rendered.includes('<!-- API_CATALOGUE -->') || !rendered.includes('<!-- API_SNAPSHOT -->')) throw new Error('API reference is missing its catalogue/evidence placeholders');
+      const snapshot = JSON.parse(await readFile(path.join(root, 'data', 'api-catalogue.json'), 'utf8'));
+      const api = renderApiReference(snapshot);
+      rendered = rendered.replace('<!-- API_CATALOGUE -->', api.html).replace('<!-- API_SNAPSHOT -->', api.evidence);
+    }
     const sidebar = categories.map(category => `<h2>${escape(category)}</h2>${guides.filter(item => item.category === category).map(item => `<a href="../${destination(item.file)}"${item.file === guide.file ? ' aria-current="page"' : ''}>${escape(item.title)}</a>`).join('')}`).join('');
     const tableOfContents = guide.collection === 'Application' ? `<nav class="guide-contents" aria-label="On this page"><strong>On this page</strong><ul>${contents.map(item => `<li><a href="#${escape(item.id)}">${escape(item.text)}</a></li>`).join('')}</ul></nav>` : '';
     if (tableOfContents) rendered = rendered.replace('<h2 ', `${tableOfContents}<h2 `);
     const contextNote = guide.reviewed ? `Reviewed ${escape(guide.reviewed)} · Current code snapshot. Implementation status and production acceptance are separate.` : 'Historical reference. Follow the document’s date and environment status; verify current configuration before acting.';
-    page = document(guide.title, `<main class="reader-layout" id="main-content"><nav class="reader-sidebar" aria-label="Guides"><a href="../index.html">← All guides</a>${sidebar}</nav><article class="reader-content"><a class="reader-mobile-back" href="../index.html">← All guides</a><p class="history-note">${contextNote}</p>${rendered}<p class="source-link"><a href="../sources/${escape(guide.file)}">Read the Markdown source</a></p></article></main>`, '../');
+    const apiScriptTag = guide.apiReference ? `<script src="../assets/${apiBrowserScriptName}" defer></script>` : '';
+    page = document(guide.title, `<main class="reader-layout" id="main-content"><nav class="reader-sidebar" aria-label="Guides"><a href="../index.html">← All guides</a>${sidebar}</nav><article class="reader-content"><a class="reader-mobile-back" href="../index.html">← All guides</a><p class="history-note">${contextNote}</p>${rendered}<p class="source-link"><a href="../sources/${escape(guide.file)}">Read the Markdown source</a></p></article></main>${apiScriptTag}`, '../');
     await writeFile(path.join(output, 'sources', guide.file), source);
   } else {
     page = source.replace(/\bhref=(['"])([^'"]+)\1/g, (match, quote, href) => {

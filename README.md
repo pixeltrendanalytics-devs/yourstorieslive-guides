@@ -37,7 +37,32 @@ Markdown is also available from each written guide.
 Generated CSS and JavaScript filenames contain content hashes so new styles
 and behavior do not depend on a visitor's cached copy of an older asset.
 
-## Publishing
+## Updating the API reference
+
+The API page is a read-only guide, not the parity application or a live API
+console. `content/api-reference.md` contains the explanation and workflow
+examples; `data/api-catalogue.json` contains the reviewed route snapshot.
+
+To refresh it, use the intended clean BFF checkout with its TypeScript
+dependency installed:
+
+```sh
+npm run sync:api -- ../yourstorieslive-api "26 October 2026"
+npm run verify
+```
+
+Use the actual review date for a later update. The extractor reads controllers,
+DTOs and response models without starting NestJS, reading environment files or
+calling an API. Review the resulting diff, conditional field rules and examples,
+then update the guide's `reviewed` metadata in `guides.json`. It records the BFF
+commit so the documentation's scope remains explicit. Future route counts are
+derived from that snapshot, not a separately maintained endpoint total.
+
+The published site builds from committed documentation only; it does not need
+the BFF checkout or its dependencies. API search/filtering happens locally in
+the browser. Keep examples fictional and credentials as placeholders.
+
+## Publishing to GitHub Pages
 
 In repository Settings → Pages, choose **GitHub Actions**. The workflow builds
 and checks the site, then publishes only `dist/`. Pull requests validate the
