@@ -1,6 +1,6 @@
 # Stakeholder FAQ: migrating PHP to a modern web application
 
-Reviewed: 10 October 2026 · Audience: owners, stakeholders and delivery teams
+UI integration addendum: 15 November 2026 · Original migration FAQ: 10 October 2026 · Audience: owners, stakeholders and delivery teams
 
 These answers explain the current Next.js + NestJS BFF migration and the decisions it leaves open. They separate observed implementation from proposed deployment and future backend replacement. For the supporting detail, open the [architecture guide](application-architecture.md), [feature map](application-features.md) or [Phase 1 presentation](yourstorieslive-phase1-stakeholder-demo.html).
 
@@ -135,6 +135,20 @@ One bounded domain at a time. Implement the new service behind the BFF contract,
 ### 28. What decisions do the owners need to make next?
 
 Agree the release acceptance scope; the privacy/access rules for discovery and sharing; the availability and recovery target; the media ownership/transcription plan; a cost budget based on measured usage; and responsibility for PHP contract changes, BFF operations and frontend support. These decisions determine the next implementation increment more usefully than adding unrelated technology.
+
+## Reusable UI library: November update
+
+### 29. What changes with the shared UI library?
+
+Controls, theme, spacing, typography and reusable page patterns now come from versioned private packages. The application keeps its data, forms, permissions, routing and optimized media adapters. The local kitchen sink is removed; library Storybook is the reusable catalogue. Other approved applications can install the same packages without copying YSL business logic. See the [integration guide](ui-library-integration-guide.md).
+
+### 30. Is the library public, and does this complete the rollout?
+
+The library repository and package artifacts remain private and are not published to npm. This public guide site contains approved test-account screenshots and documentation, not library archives or credentials. The application integration is on its feature branch; publication of a comparison is not a merge or production deployment. Designer/product sign-off, controlled transactional checks and latest Figma variable reconciliation remain explicit acceptance work.
+
+### 31. How do we compare appearance and performance fairly?
+
+The [fresh comparison report](ui-library-verification.html) pairs the same account/content at matched viewport sizes on the existing Vercel application and localhost. It labels candidate-only dark theme views, environmental media failures and untested journeys. Unit tests, public-page browser tests and frozen bundle checks passed. Bundle sizes describe emitted code, not real-user responsiveness; production-like timings and real devices still need measurement.
 
 ## Basis of these answers
 

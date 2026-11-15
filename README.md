@@ -1,7 +1,7 @@
 # YourStoriesLive guides
 
-A static, searchable library of architecture, AWS deployment, media migration
-and POC documentation. The site runs on GitHub Pages; no application server or
+A static, searchable library of architecture, AWS deployment, media migration,
+POC documentation and UI-library integration reviews. The site runs on GitHub Pages; no application server or
 AWS deployment is required.
 
 ## Working locally
@@ -69,7 +69,7 @@ and checks the site, then publishes only `dist/`. Pull requests validate the
 site without deploying. A successful main-branch deployment updates the site.
 
 Only documentation sources and site-building files belong in this repository.
-Do not add credentials, environment files, signed media URLs, user data, HARs,
+Do not add credentials, environment files, signed media URLs, unapproved user data, HARs,
 database dumps or runtime/application code. A public Pages site and public
 repository are visible to anyone.
 
@@ -84,3 +84,13 @@ shown as references rather than broken website links.
 Several documents describe an AWS POC that was subsequently torn down. They
 are records and design references, not a live infrastructure dashboard. Follow
 each document's date and status before using operational commands or budgets.
+
+## UI-library verification and integration
+
+- [Integration guide](content/ui-library-integration-guide.md) explains the private packages, provider, ownership boundaries and acceptance gates.
+- [Visual review](content/ui-library-verification.html) is generated from `data/ui-integration-verification.json` by `scripts/build-ui-verification.mjs`.
+- Approved test-account screenshots live in `site/assets/ui-integration/`; they are copied to the published site. Publication was explicitly authorized for this review. Never add credentials, session data, HARs, billing details, signed URLs or private package archives.
+- Capture matching fresh states at the same viewport and wait for application data before saving. Record source commit, versions, capture dates and actual limits; do not relabel earlier captures as a new build.
+- Run `npm run build:ui-verification` after updating evidence, then `npm run verify`. The checks reject stale generated HTML and missing screenshot evidence.
+- Sign-off and notes in the review UI are local to the reviewer's browser. They are not sent to GitHub or an approval service.
+- The API catalogue still records BFF `00d2139`, matching the inspected local main on 15 November. A UI documentation refresh does not imply every API or historical AWS runbook was re-tested.

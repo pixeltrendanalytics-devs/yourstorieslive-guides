@@ -1,0 +1,1716 @@
+{
+  "sourceRevision": "62a7e2868470e96d9b0be6c252ed118ff0cd1e1d",
+  "libraryRevision": "9401d273f35ce6d5e2138b1dc1d06cb167c08008",
+  "capturedOn": "15 November 2026",
+  "baselineUrl": "https://yourstorieslive.vercel.app",
+  "candidateUrl": "http://localhost:3000",
+  "baselineRevision": null,
+  "screens": [
+    {
+      "id": "dashboard",
+      "title": "Dashboard",
+      "group": "Member",
+      "device": "Desktop",
+      "note": "Same account, loaded 32 stories, 11 connections, 3 advice entries and 40% progress.",
+      "checked": "Header/search, sidebar active state, dynamic greeting, image-backed cards and real counts.",
+      "after": {
+        "id": "dashboard",
+        "side": "after",
+        "file": "dashboard-after.jpg",
+        "width": 1440,
+        "height": 1000,
+        "path": "/dashboard",
+        "capturedAt": "2026-11-15T03:22:07.035Z",
+        "rendered": {
+          "bodyFont": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+          "cardPadding": "0px",
+          "heading": "Welcome back, Muthukumar",
+          "headingFont": "Literata, \"Literata Fallback\", \"Iowan Old Style\", \"Palatino Linotype\", Georgia, serif",
+          "headingSize": "40px",
+          "primary": "#572ea6",
+          "scrollWidth": 1440,
+          "viewportWidth": 1440
+        }
+      },
+      "before": {
+        "id": "dashboard",
+        "side": "before",
+        "file": "dashboard-before.jpg",
+        "width": 1440,
+        "height": 1000,
+        "path": "/dashboard",
+        "capturedAt": "2026-11-15T03:22:33.300Z",
+        "rendered": {
+          "bodyFont": "Inter, \"Inter Fallback\", \"Noto Sans Devanagari\", \"Noto Sans Devanagari Fallback\", \"Noto Sans KR\", \"Noto Sans KR Fallback\", \"Noto Sans SC\", \"Noto Sans SC Fallback\", \"Noto Sans JP\", \"Noto Sans JP Fallback\", ui-sans-serif, system-ui, sans-serif",
+          "cardPadding": null,
+          "heading": "Welcome back, Muthukumar",
+          "headingFont": "Lora, \"Lora Fallback\", Lora, \"Iowan Old Style\", \"Palatino Linotype\", Georgia, serif",
+          "headingSize": "48px",
+          "primary": "",
+          "scrollWidth": 1440,
+          "viewportWidth": 1440
+        }
+      }
+    },
+    {
+      "id": "photos",
+      "title": "Photos library",
+      "group": "Media",
+      "device": "Desktop",
+      "note": "Same 24-item library and month groups; original media availability can vary between origins.",
+      "checked": "Search/filter/sort, upload control, month selection, responsive optimized thumbnails.",
+      "before": {
+        "id": "photos",
+        "side": "before",
+        "file": "photos-before.jpg",
+        "width": 1440,
+        "height": 1000,
+        "path": "/photos",
+        "capturedAt": "2026-11-15T03:23:39.579Z",
+        "rendered": {
+          "bodyFont": "Inter, \"Inter Fallback\", \"Noto Sans Devanagari\", \"Noto Sans Devanagari Fallback\", \"Noto Sans KR\", \"Noto Sans KR Fallback\", \"Noto Sans SC\", \"Noto Sans SC Fallback\", \"Noto Sans JP\", \"Noto Sans JP Fallback\", ui-sans-serif, system-ui, sans-serif",
+          "cardPadding": null,
+          "heading": "Your photos",
+          "headingFont": "Lora, \"Lora Fallback\", Lora, \"Iowan Old Style\", \"Palatino Linotype\", Georgia, serif",
+          "headingSize": "48px",
+          "primary": "",
+          "scrollWidth": 1440,
+          "viewportWidth": 1440
+        }
+      },
+      "after": {
+        "id": "photos",
+        "side": "after",
+        "file": "photos-after.jpg",
+        "width": 1440,
+        "height": 1000,
+        "path": "/photos",
+        "capturedAt": "2026-11-15T03:23:39.691Z",
+        "rendered": {
+          "bodyFont": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+          "cardPadding": "24px",
+          "heading": "Your photos",
+          "headingFont": "Literata, \"Literata Fallback\", \"Iowan Old Style\", \"Palatino Linotype\", Georgia, serif",
+          "headingSize": "40px",
+          "primary": "#572ea6",
+          "scrollWidth": 1440,
+          "viewportWidth": 1440
+        }
+      }
+    },
+    {
+      "id": "photo-filters",
+      "title": "Photo filters",
+      "group": "Dialogs",
+      "device": "Desktop",
+      "note": "Life-stage data was loaded before capturing both filter dialogs.",
+      "checked": "Status and life-stage choices, modal width, reset/apply controls; no filter was submitted.",
+      "before": {
+        "id": "photo-filters",
+        "side": "before",
+        "file": "photo-filters-before.jpg",
+        "width": 1440,
+        "height": 1000,
+        "path": "/photos",
+        "capturedAt": "2026-11-15T03:25:03.880Z",
+        "rendered": {
+          "bodyFont": "Inter, \"Inter Fallback\", \"Noto Sans Devanagari\", \"Noto Sans Devanagari Fallback\", \"Noto Sans KR\", \"Noto Sans KR Fallback\", \"Noto Sans SC\", \"Noto Sans SC Fallback\", \"Noto Sans JP\", \"Noto Sans JP Fallback\", ui-sans-serif, system-ui, sans-serif",
+          "cardPadding": null,
+          "heading": "Your photos",
+          "headingFont": "Lora, \"Lora Fallback\", Lora, \"Iowan Old Style\", \"Palatino Linotype\", Georgia, serif",
+          "headingSize": "48px",
+          "primary": "",
+          "scrollWidth": 1440,
+          "viewportWidth": 1440
+        }
+      },
+      "after": {
+        "id": "photo-filters",
+        "side": "after",
+        "file": "photo-filters-after.jpg",
+        "width": 1440,
+        "height": 1000,
+        "path": "/photos",
+        "capturedAt": "2026-11-15T03:25:03.977Z",
+        "rendered": {
+          "bodyFont": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+          "cardPadding": "24px",
+          "heading": "Your photos",
+          "headingFont": "Literata, \"Literata Fallback\", \"Iowan Old Style\", \"Palatino Linotype\", Georgia, serif",
+          "headingSize": "40px",
+          "primary": "#572ea6",
+          "scrollWidth": 1440,
+          "viewportWidth": 1440
+        }
+      }
+    },
+    {
+      "id": "photo-preview",
+      "title": "Desktop photo gallery",
+      "group": "Media",
+      "device": "Desktop",
+      "note": "Same Profile photo, item 9 of 24, with the thumbnail strip and metadata pane.",
+      "checked": "Opened preview and advanced Next on both viewers; metadata/thumbnail interactions retained.",
+      "before": {
+        "id": "photo-preview",
+        "side": "before",
+        "file": "photo-preview-before.jpg",
+        "width": 1440,
+        "height": 1000,
+        "path": "/photos",
+        "capturedAt": "2026-11-15T03:29:19.174Z",
+        "rendered": {
+          "bodyFont": "Inter, \"Inter Fallback\", \"Noto Sans Devanagari\", \"Noto Sans Devanagari Fallback\", \"Noto Sans KR\", \"Noto Sans KR Fallback\", \"Noto Sans SC\", \"Noto Sans SC Fallback\", \"Noto Sans JP\", \"Noto Sans JP Fallback\", ui-sans-serif, system-ui, sans-serif",
+          "cardPadding": null,
+          "heading": "Your photos",
+          "headingFont": "Lora, \"Lora Fallback\", Lora, \"Iowan Old Style\", \"Palatino Linotype\", Georgia, serif",
+          "headingSize": "48px",
+          "primary": "",
+          "scrollWidth": 1440,
+          "viewportWidth": 1440
+        }
+      },
+      "after": {
+        "id": "photo-preview",
+        "side": "after",
+        "file": "photo-preview-after.jpg",
+        "width": 1440,
+        "height": 1000,
+        "path": "/photos",
+        "capturedAt": "2026-11-15T03:28:38.798Z",
+        "rendered": {
+          "bodyFont": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+          "cardPadding": "24px",
+          "heading": "Your photos",
+          "headingFont": "Literata, \"Literata Fallback\", \"Iowan Old Style\", \"Palatino Linotype\", Georgia, serif",
+          "headingSize": "40px",
+          "primary": "#572ea6",
+          "scrollWidth": 1440,
+          "viewportWidth": 1440
+        }
+      }
+    },
+    {
+      "id": "contacts",
+      "title": "Contact details",
+      "group": "Member",
+      "device": "Desktop",
+      "note": "Same selected contact and associated photo count; approved test details are visible.",
+      "checked": "Selected contact state, list/detail layout, private access control and compact Photos section.",
+      "before": {
+        "id": "contacts",
+        "side": "before",
+        "file": "contacts-before.jpg",
+        "width": 1440,
+        "height": 1000,
+        "path": "/contacts",
+        "capturedAt": "2026-11-15T03:29:40.185Z",
+        "rendered": {
+          "bodyFont": "Inter, \"Inter Fallback\", \"Noto Sans Devanagari\", \"Noto Sans Devanagari Fallback\", \"Noto Sans KR\", \"Noto Sans KR Fallback\", \"Noto Sans SC\", \"Noto Sans SC Fallback\", \"Noto Sans JP\", \"Noto Sans JP Fallback\", ui-sans-serif, system-ui, sans-serif",
+          "cardPadding": null,
+          "heading": "Contacts",
+          "headingFont": "Lora, \"Lora Fallback\", Lora, \"Iowan Old Style\", \"Palatino Linotype\", Georgia, serif",
+          "headingSize": "48px",
+          "primary": "",
+          "scrollWidth": 1440,
+          "viewportWidth": 1440
+        }
+      },
+      "after": {
+        "id": "contacts",
+        "side": "after",
+        "file": "contacts-after.jpg",
+        "width": 1440,
+        "height": 1000,
+        "path": "/contacts",
+        "capturedAt": "2026-11-15T03:29:40.285Z",
+        "rendered": {
+          "bodyFont": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+          "cardPadding": "24px",
+          "heading": "Contacts",
+          "headingFont": "Literata, \"Literata Fallback\", \"Iowan Old Style\", \"Palatino Linotype\", Georgia, serif",
+          "headingSize": "40px",
+          "primary": "#572ea6",
+          "scrollWidth": 1440,
+          "viewportWidth": 1440
+        }
+      }
+    },
+    {
+      "id": "contact-edit",
+      "title": "Edit contact dialog",
+      "group": "Dialogs",
+      "device": "Desktop",
+      "note": "Same populated contact form opened read-only; no save or upload was performed.",
+      "checked": "Field labels, relationship/date controls, social fields and reachable form layout.",
+      "before": {
+        "id": "contact-edit",
+        "side": "before",
+        "file": "contact-edit-before.jpg",
+        "width": 1440,
+        "height": 1000,
+        "path": "/contacts",
+        "capturedAt": "2026-11-15T03:30:01.613Z",
+        "rendered": {
+          "bodyFont": "Inter, \"Inter Fallback\", \"Noto Sans Devanagari\", \"Noto Sans Devanagari Fallback\", \"Noto Sans KR\", \"Noto Sans KR Fallback\", \"Noto Sans SC\", \"Noto Sans SC Fallback\", \"Noto Sans JP\", \"Noto Sans JP Fallback\", ui-sans-serif, system-ui, sans-serif",
+          "cardPadding": null,
+          "heading": "Contacts",
+          "headingFont": "Lora, \"Lora Fallback\", Lora, \"Iowan Old Style\", \"Palatino Linotype\", Georgia, serif",
+          "headingSize": "48px",
+          "primary": "",
+          "scrollWidth": 1440,
+          "viewportWidth": 1440
+        }
+      },
+      "after": {
+        "id": "contact-edit",
+        "side": "after",
+        "file": "contact-edit-after.jpg",
+        "width": 1440,
+        "height": 1000,
+        "path": "/contacts",
+        "capturedAt": "2026-11-15T03:30:01.718Z",
+        "rendered": {
+          "bodyFont": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+          "cardPadding": "24px",
+          "heading": "Contacts",
+          "headingFont": "Literata, \"Literata Fallback\", \"Iowan Old Style\", \"Palatino Linotype\", Georgia, serif",
+          "headingSize": "40px",
+          "primary": "#572ea6",
+          "scrollWidth": 1440,
+          "viewportWidth": 1440
+        }
+      }
+    },
+    {
+      "id": "timeline",
+      "title": "Your timeline",
+      "group": "Member",
+      "device": "Desktop",
+      "note": "Same Infant stage and story content. The baseline document measured 40px wider than its viewport; candidate did not.",
+      "checked": "Search, stage pills, comment indication, media layout and story link navigation.",
+      "before": {
+        "id": "timeline",
+        "side": "before",
+        "file": "timeline-before.jpg",
+        "width": 1440,
+        "height": 1000,
+        "path": "/yourtimeline",
+        "capturedAt": "2026-11-15T03:30:31.065Z",
+        "rendered": {
+          "bodyFont": "Inter, \"Inter Fallback\", \"Noto Sans Devanagari\", \"Noto Sans Devanagari Fallback\", \"Noto Sans KR\", \"Noto Sans KR Fallback\", \"Noto Sans SC\", \"Noto Sans SC Fallback\", \"Noto Sans JP\", \"Noto Sans JP Fallback\", ui-sans-serif, system-ui, sans-serif",
+          "cardPadding": null,
+          "heading": "Your timeline",
+          "headingFont": "Lora, \"Lora Fallback\", Lora, \"Iowan Old Style\", \"Palatino Linotype\", Georgia, serif",
+          "headingSize": "48px",
+          "primary": "",
+          "scrollWidth": 1480,
+          "viewportWidth": 1440
+        }
+      },
+      "after": {
+        "id": "timeline",
+        "side": "after",
+        "file": "timeline-after.jpg",
+        "width": 1440,
+        "height": 1000,
+        "path": "/yourtimeline",
+        "capturedAt": "2026-11-15T03:30:31.230Z",
+        "rendered": {
+          "bodyFont": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+          "cardPadding": "24px",
+          "heading": "Your timeline",
+          "headingFont": "Literata, \"Literata Fallback\", \"Iowan Old Style\", \"Palatino Linotype\", Georgia, serif",
+          "headingSize": "40px",
+          "primary": "#572ea6",
+          "scrollWidth": 1440,
+          "viewportWidth": 1440
+        }
+      }
+    },
+    {
+      "id": "story-detail",
+      "title": "Story detail",
+      "group": "Member",
+      "device": "Desktop",
+      "note": "Same “The bell on the front gate” story and media; comments finished loading before capture.",
+      "checked": "Story read navigation, media presentation, date/location and comments area.",
+      "before": {
+        "id": "story-detail",
+        "side": "before",
+        "file": "story-detail-before.jpg",
+        "width": 1440,
+        "height": 1000,
+        "path": "/story-global",
+        "capturedAt": "2026-11-15T03:30:47.550Z",
+        "rendered": {
+          "bodyFont": "Inter, \"Inter Fallback\", \"Noto Sans Devanagari\", \"Noto Sans Devanagari Fallback\", \"Noto Sans KR\", \"Noto Sans KR Fallback\", \"Noto Sans SC\", \"Noto Sans SC Fallback\", \"Noto Sans JP\", \"Noto Sans JP Fallback\", ui-sans-serif, system-ui, sans-serif",
+          "cardPadding": null,
+          "heading": "The bell on the front gate",
+          "headingFont": "Lora, \"Lora Fallback\", Lora, \"Iowan Old Style\", \"Palatino Linotype\", Georgia, serif",
+          "headingSize": "36px",
+          "primary": "",
+          "scrollWidth": 1440,
+          "viewportWidth": 1440
+        }
+      },
+      "after": {
+        "id": "story-detail",
+        "side": "after",
+        "file": "story-detail-after.jpg",
+        "width": 1440,
+        "height": 1000,
+        "path": "/story-global",
+        "capturedAt": "2026-11-15T03:30:47.631Z",
+        "rendered": {
+          "bodyFont": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+          "cardPadding": "24px",
+          "heading": "The bell on the front gate",
+          "headingFont": "Literata, \"Literata Fallback\", \"Iowan Old Style\", \"Palatino Linotype\", Georgia, serif",
+          "headingSize": "30px",
+          "primary": "#572ea6",
+          "scrollWidth": 1440,
+          "viewportWidth": 1440
+        }
+      }
+    },
+    {
+      "id": "profile",
+      "title": "Profile overview",
+      "group": "Profile",
+      "device": "Desktop",
+      "note": "Both views show the loaded member profile and 40% completion.",
+      "checked": "Profile groups, selected content, progress and explicit links.",
+      "before": {
+        "id": "profile",
+        "side": "before",
+        "file": "profile-before.jpg",
+        "width": 1440,
+        "height": 1000,
+        "path": "/profile",
+        "capturedAt": "2026-11-15T03:32:37.301Z",
+        "rendered": {
+          "bodyFont": "Inter, \"Inter Fallback\", \"Noto Sans Devanagari\", \"Noto Sans Devanagari Fallback\", \"Noto Sans KR\", \"Noto Sans KR Fallback\", \"Noto Sans SC\", \"Noto Sans SC Fallback\", \"Noto Sans JP\", \"Noto Sans JP Fallback\", ui-sans-serif, system-ui, sans-serif",
+          "cardPadding": null,
+          "heading": "Your profile",
+          "headingFont": "Lora, \"Lora Fallback\", Lora, \"Iowan Old Style\", \"Palatino Linotype\", Georgia, serif",
+          "headingSize": "48px",
+          "primary": "",
+          "scrollWidth": 1440,
+          "viewportWidth": 1440
+        }
+      },
+      "after": {
+        "id": "profile",
+        "side": "after",
+        "file": "profile-after.jpg",
+        "width": 1440,
+        "height": 1000,
+        "path": "/profile",
+        "capturedAt": "2026-11-15T03:32:37.400Z",
+        "rendered": {
+          "bodyFont": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+          "cardPadding": "32px",
+          "heading": "Your profile",
+          "headingFont": "Literata, \"Literata Fallback\", \"Iowan Old Style\", \"Palatino Linotype\", Georgia, serif",
+          "headingSize": "40px",
+          "primary": "#572ea6",
+          "scrollWidth": 1440,
+          "viewportWidth": 1440
+        }
+      }
+    },
+    {
+      "id": "your-life",
+      "title": "Your Life",
+      "group": "Profile",
+      "device": "Desktop",
+      "note": "Same loaded life-stage answers. Narrow layout is compared separately.",
+      "checked": "Stage columns, answer tiles, text wrapping and domain actions retained.",
+      "before": {
+        "id": "your-life",
+        "side": "before",
+        "file": "your-life-before.jpg",
+        "width": 1440,
+        "height": 1000,
+        "path": "/profile/your-life",
+        "capturedAt": "2026-11-15T03:32:50.784Z",
+        "rendered": {
+          "bodyFont": "Inter, \"Inter Fallback\", \"Noto Sans Devanagari\", \"Noto Sans Devanagari Fallback\", \"Noto Sans KR\", \"Noto Sans KR Fallback\", \"Noto Sans SC\", \"Noto Sans SC Fallback\", \"Noto Sans JP\", \"Noto Sans JP Fallback\", ui-sans-serif, system-ui, sans-serif",
+          "cardPadding": null,
+          "heading": "Your Life",
+          "headingFont": "Lora, \"Lora Fallback\", Lora, \"Iowan Old Style\", \"Palatino Linotype\", Georgia, serif",
+          "headingSize": "48px",
+          "primary": "",
+          "scrollWidth": 1440,
+          "viewportWidth": 1440
+        }
+      },
+      "after": {
+        "id": "your-life",
+        "side": "after",
+        "file": "your-life-after.jpg",
+        "width": 1440,
+        "height": 1000,
+        "path": "/profile/your-life",
+        "capturedAt": "2026-11-15T03:32:50.885Z",
+        "rendered": {
+          "bodyFont": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+          "cardPadding": "20px",
+          "heading": "Your Life",
+          "headingFont": "Literata, \"Literata Fallback\", \"Iowan Old Style\", \"Palatino Linotype\", Georgia, serif",
+          "headingSize": "40px",
+          "primary": "#572ea6",
+          "scrollWidth": 1440,
+          "viewportWidth": 1440
+        }
+      }
+    },
+    {
+      "id": "moments",
+      "title": "Moments & education",
+      "group": "Profile",
+      "device": "Desktop",
+      "note": "Same education entries and important moments.",
+      "checked": "Education and moment cards, date context and action presentation.",
+      "before": {
+        "id": "moments",
+        "side": "before",
+        "file": "moments-before.jpg",
+        "width": 1440,
+        "height": 1000,
+        "path": "/profile/your-moments",
+        "capturedAt": "2026-11-15T03:33:19.935Z",
+        "rendered": {
+          "bodyFont": "Inter, \"Inter Fallback\", \"Noto Sans Devanagari\", \"Noto Sans Devanagari Fallback\", \"Noto Sans KR\", \"Noto Sans KR Fallback\", \"Noto Sans SC\", \"Noto Sans SC Fallback\", \"Noto Sans JP\", \"Noto Sans JP Fallback\", ui-sans-serif, system-ui, sans-serif",
+          "cardPadding": null,
+          "heading": "Your Moments",
+          "headingFont": "Lora, \"Lora Fallback\", Lora, \"Iowan Old Style\", \"Palatino Linotype\", Georgia, serif",
+          "headingSize": "48px",
+          "primary": "",
+          "scrollWidth": 1440,
+          "viewportWidth": 1440
+        }
+      },
+      "after": {
+        "id": "moments",
+        "side": "after",
+        "file": "moments-after.jpg",
+        "width": 1440,
+        "height": 1000,
+        "path": "/profile/your-moments",
+        "capturedAt": "2026-11-15T03:33:21.967Z",
+        "rendered": {
+          "bodyFont": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+          "cardPadding": "20px",
+          "heading": "Your Moments",
+          "headingFont": "Literata, \"Literata Fallback\", \"Iowan Old Style\", \"Palatino Linotype\", Georgia, serif",
+          "headingSize": "40px",
+          "primary": "#572ea6",
+          "scrollWidth": 1440,
+          "viewportWidth": 1440
+        }
+      }
+    },
+    {
+      "id": "moment-form",
+      "title": "Important moment form",
+      "group": "Dialogs",
+      "device": "Desktop",
+      "note": "Form data loaded before capture. No submission or media upload.",
+      "checked": "Required description/date labels, optional photo, upload-size guidance and modal controls.",
+      "before": {
+        "id": "moment-form",
+        "side": "before",
+        "file": "moment-form-before.jpg",
+        "width": 1440,
+        "height": 1000,
+        "path": "/profile/your-moments",
+        "capturedAt": "2026-11-15T03:33:40.002Z",
+        "rendered": {
+          "bodyFont": "Inter, \"Inter Fallback\", \"Noto Sans Devanagari\", \"Noto Sans Devanagari Fallback\", \"Noto Sans KR\", \"Noto Sans KR Fallback\", \"Noto Sans SC\", \"Noto Sans SC Fallback\", \"Noto Sans JP\", \"Noto Sans JP Fallback\", ui-sans-serif, system-ui, sans-serif",
+          "cardPadding": null,
+          "heading": "Your Moments",
+          "headingFont": "Lora, \"Lora Fallback\", Lora, \"Iowan Old Style\", \"Palatino Linotype\", Georgia, serif",
+          "headingSize": "48px",
+          "primary": "",
+          "scrollWidth": 1440,
+          "viewportWidth": 1440
+        }
+      },
+      "after": {
+        "id": "moment-form",
+        "side": "after",
+        "file": "moment-form-after.jpg",
+        "width": 1440,
+        "height": 1000,
+        "path": "/profile/your-moments",
+        "capturedAt": "2026-11-15T03:33:40.088Z",
+        "rendered": {
+          "bodyFont": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+          "cardPadding": "20px",
+          "heading": "Your Moments",
+          "headingFont": "Literata, \"Literata Fallback\", \"Iowan Old Style\", \"Palatino Linotype\", Georgia, serif",
+          "headingSize": "40px",
+          "primary": "#572ea6",
+          "scrollWidth": 1440,
+          "viewportWidth": 1440
+        }
+      }
+    },
+    {
+      "id": "advice",
+      "title": "Your Advice",
+      "group": "Profile",
+      "device": "Desktop",
+      "note": "Same loaded category/answer data.",
+      "checked": "Category cards, counts and shared page typography.",
+      "before": {
+        "id": "advice",
+        "side": "before",
+        "file": "advice-before.jpg",
+        "width": 1440,
+        "height": 1000,
+        "path": "/profile/your-advice",
+        "capturedAt": "2026-11-15T03:33:53.340Z",
+        "rendered": {
+          "bodyFont": "Inter, \"Inter Fallback\", \"Noto Sans Devanagari\", \"Noto Sans Devanagari Fallback\", \"Noto Sans KR\", \"Noto Sans KR Fallback\", \"Noto Sans SC\", \"Noto Sans SC Fallback\", \"Noto Sans JP\", \"Noto Sans JP Fallback\", ui-sans-serif, system-ui, sans-serif",
+          "cardPadding": null,
+          "heading": "Your Advice",
+          "headingFont": "Lora, \"Lora Fallback\", Lora, \"Iowan Old Style\", \"Palatino Linotype\", Georgia, serif",
+          "headingSize": "48px",
+          "primary": "",
+          "scrollWidth": 1440,
+          "viewportWidth": 1440
+        }
+      },
+      "after": {
+        "id": "advice",
+        "side": "after",
+        "file": "advice-after.jpg",
+        "width": 1440,
+        "height": 1000,
+        "path": "/profile/your-advice",
+        "capturedAt": "2026-11-15T03:33:53.448Z",
+        "rendered": {
+          "bodyFont": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+          "cardPadding": "24px",
+          "heading": "Your Advice",
+          "headingFont": "Literata, \"Literata Fallback\", \"Iowan Old Style\", \"Palatino Linotype\", Georgia, serif",
+          "headingSize": "40px",
+          "primary": "#572ea6",
+          "scrollWidth": 1440,
+          "viewportWidth": 1440
+        }
+      }
+    },
+    {
+      "id": "reflections",
+      "title": "Your Reflections",
+      "group": "Profile",
+      "device": "Desktop",
+      "note": "Both received and written reflection lists loaded before capture.",
+      "checked": "Text/media reflections and existing hide/delete controls; none activated.",
+      "before": {
+        "id": "reflections",
+        "side": "before",
+        "file": "reflections-before.jpg",
+        "width": 1440,
+        "height": 1000,
+        "path": "/profile/your-reflections",
+        "capturedAt": "2026-11-15T03:34:12.239Z",
+        "rendered": {
+          "bodyFont": "Inter, \"Inter Fallback\", \"Noto Sans Devanagari\", \"Noto Sans Devanagari Fallback\", \"Noto Sans KR\", \"Noto Sans KR Fallback\", \"Noto Sans SC\", \"Noto Sans SC Fallback\", \"Noto Sans JP\", \"Noto Sans JP Fallback\", ui-sans-serif, system-ui, sans-serif",
+          "cardPadding": null,
+          "heading": "Your Reflections",
+          "headingFont": "Lora, \"Lora Fallback\", Lora, \"Iowan Old Style\", \"Palatino Linotype\", Georgia, serif",
+          "headingSize": "48px",
+          "primary": "",
+          "scrollWidth": 1440,
+          "viewportWidth": 1440
+        }
+      },
+      "after": {
+        "id": "reflections",
+        "side": "after",
+        "file": "reflections-after.jpg",
+        "width": 1440,
+        "height": 1000,
+        "path": "/profile/your-reflections",
+        "capturedAt": "2026-11-15T03:34:12.341Z",
+        "rendered": {
+          "bodyFont": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+          "cardPadding": "24px",
+          "heading": "Your Reflections",
+          "headingFont": "Literata, \"Literata Fallback\", \"Iowan Old Style\", \"Palatino Linotype\", Georgia, serif",
+          "headingSize": "40px",
+          "primary": "#572ea6",
+          "scrollWidth": 1440,
+          "viewportWidth": 1440
+        }
+      }
+    },
+    {
+      "id": "new-story",
+      "title": "Story composer",
+      "group": "Forms",
+      "device": "Desktop",
+      "note": "Write mode opened without entering or saving a story.",
+      "checked": "Required date/location markers, mode choices, rich-text tools, upload guidance and audience controls.",
+      "before": {
+        "id": "new-story",
+        "side": "before",
+        "file": "new-story-before.jpg",
+        "width": 1440,
+        "height": 1000,
+        "path": "/stories/new",
+        "capturedAt": "2026-11-15T03:34:58.739Z",
+        "rendered": {
+          "bodyFont": "Inter, \"Inter Fallback\", \"Noto Sans Devanagari\", \"Noto Sans Devanagari Fallback\", \"Noto Sans KR\", \"Noto Sans KR Fallback\", \"Noto Sans SC\", \"Noto Sans SC Fallback\", \"Noto Sans JP\", \"Noto Sans JP Fallback\", ui-sans-serif, system-ui, sans-serif",
+          "cardPadding": null,
+          "heading": "Tell your story",
+          "headingFont": "Lora, \"Lora Fallback\", Lora, \"Iowan Old Style\", \"Palatino Linotype\", Georgia, serif",
+          "headingSize": "48px",
+          "primary": "",
+          "scrollWidth": 1440,
+          "viewportWidth": 1440
+        }
+      },
+      "after": {
+        "id": "new-story",
+        "side": "after",
+        "file": "new-story-after.jpg",
+        "width": 1440,
+        "height": 1000,
+        "path": "/stories/new",
+        "capturedAt": "2026-11-15T03:34:58.838Z",
+        "rendered": {
+          "bodyFont": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+          "cardPadding": "32px",
+          "heading": "Tell your story",
+          "headingFont": "Literata, \"Literata Fallback\", \"Iowan Old Style\", \"Palatino Linotype\", Georgia, serif",
+          "headingSize": "40px",
+          "primary": "#572ea6",
+          "scrollWidth": 1440,
+          "viewportWidth": 1440
+        }
+      }
+    },
+    {
+      "id": "ancestry",
+      "title": "Ancestry tree",
+      "group": "Member",
+      "device": "Desktop",
+      "note": "Same loaded family-tree nodes at 100% zoom.",
+      "checked": "Tree framing, relative nodes and existing controls; no relatives changed.",
+      "before": {
+        "id": "ancestry",
+        "side": "before",
+        "file": "ancestry-before.jpg",
+        "width": 1440,
+        "height": 1000,
+        "path": "/ancestry",
+        "capturedAt": "2026-11-15T03:37:30.506Z",
+        "rendered": {
+          "bodyFont": "Inter, \"Inter Fallback\", \"Noto Sans Devanagari\", \"Noto Sans Devanagari Fallback\", \"Noto Sans KR\", \"Noto Sans KR Fallback\", \"Noto Sans SC\", \"Noto Sans SC Fallback\", \"Noto Sans JP\", \"Noto Sans JP Fallback\", ui-sans-serif, system-ui, sans-serif",
+          "cardPadding": null,
+          "heading": "Your ancestry",
+          "headingFont": "Lora, \"Lora Fallback\", Lora, \"Iowan Old Style\", \"Palatino Linotype\", Georgia, serif",
+          "headingSize": "48px",
+          "primary": "",
+          "scrollWidth": 1440,
+          "viewportWidth": 1440
+        }
+      },
+      "after": {
+        "id": "ancestry",
+        "side": "after",
+        "file": "ancestry-after.jpg",
+        "width": 1440,
+        "height": 1000,
+        "path": "/ancestry",
+        "capturedAt": "2026-11-15T03:37:30.606Z",
+        "rendered": {
+          "bodyFont": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+          "cardPadding": "0px",
+          "heading": "Your ancestry",
+          "headingFont": "Literata, \"Literata Fallback\", \"Iowan Old Style\", \"Palatino Linotype\", Georgia, serif",
+          "headingSize": "40px",
+          "primary": "#572ea6",
+          "scrollWidth": 1440,
+          "viewportWidth": 1440
+        }
+      }
+    },
+    {
+      "id": "gifts",
+      "title": "Gifts & messages",
+      "group": "Supporting screens",
+      "device": "Desktop",
+      "note": "Layout and empty state comparison only. Complete scheduling/delivery is not certified.",
+      "checked": "Option cards, search/filter controls and zero-state presentation.",
+      "before": {
+        "id": "gifts",
+        "side": "before",
+        "file": "gifts-before.jpg",
+        "width": 1440,
+        "height": 1000,
+        "path": "/gifts-messages",
+        "capturedAt": "2026-11-15T03:38:05.240Z",
+        "rendered": {
+          "bodyFont": "Inter, \"Inter Fallback\", \"Noto Sans Devanagari\", \"Noto Sans Devanagari Fallback\", \"Noto Sans KR\", \"Noto Sans KR Fallback\", \"Noto Sans SC\", \"Noto Sans SC Fallback\", \"Noto Sans JP\", \"Noto Sans JP Fallback\", ui-sans-serif, system-ui, sans-serif",
+          "cardPadding": null,
+          "heading": "Gifts & messages",
+          "headingFont": "Lora, \"Lora Fallback\", Lora, \"Iowan Old Style\", \"Palatino Linotype\", Georgia, serif",
+          "headingSize": "48px",
+          "primary": "",
+          "scrollWidth": 1440,
+          "viewportWidth": 1440
+        }
+      },
+      "after": {
+        "id": "gifts",
+        "side": "after",
+        "file": "gifts-after.jpg",
+        "width": 1440,
+        "height": 1000,
+        "path": "/gifts-messages",
+        "capturedAt": "2026-11-15T03:38:05.322Z",
+        "rendered": {
+          "bodyFont": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+          "cardPadding": "24px",
+          "heading": "Gifts & messages",
+          "headingFont": "Literata, \"Literata Fallback\", \"Iowan Old Style\", \"Palatino Linotype\", Georgia, serif",
+          "headingSize": "40px",
+          "primary": "#572ea6",
+          "scrollWidth": 1440,
+          "viewportWidth": 1440
+        }
+      }
+    },
+    {
+      "id": "concierge",
+      "title": "Concierge",
+      "group": "Supporting screens",
+      "device": "Desktop",
+      "note": "Layout, plan counts and empty state only. No appointment booked.",
+      "checked": "Tabs, appointment empty state and existing request controls.",
+      "before": {
+        "id": "concierge",
+        "side": "before",
+        "file": "concierge-before.jpg",
+        "width": 1440,
+        "height": 1000,
+        "path": "/concierge",
+        "capturedAt": "2026-11-15T03:38:29.274Z",
+        "rendered": {
+          "bodyFont": "Inter, \"Inter Fallback\", \"Noto Sans Devanagari\", \"Noto Sans Devanagari Fallback\", \"Noto Sans KR\", \"Noto Sans KR Fallback\", \"Noto Sans SC\", \"Noto Sans SC Fallback\", \"Noto Sans JP\", \"Noto Sans JP Fallback\", ui-sans-serif, system-ui, sans-serif",
+          "cardPadding": null,
+          "heading": "Concierge appointments",
+          "headingFont": "Lora, \"Lora Fallback\", Lora, \"Iowan Old Style\", \"Palatino Linotype\", Georgia, serif",
+          "headingSize": "48px",
+          "primary": "",
+          "scrollWidth": 1440,
+          "viewportWidth": 1440
+        }
+      },
+      "after": {
+        "id": "concierge",
+        "side": "after",
+        "file": "concierge-after.jpg",
+        "width": 1440,
+        "height": 1000,
+        "path": "/concierge",
+        "capturedAt": "2026-11-15T03:38:29.358Z",
+        "rendered": {
+          "bodyFont": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+          "cardPadding": "24px",
+          "heading": "Concierge appointments",
+          "headingFont": "Literata, \"Literata Fallback\", \"Iowan Old Style\", \"Palatino Linotype\", Georgia, serif",
+          "headingSize": "40px",
+          "primary": "#572ea6",
+          "scrollWidth": 1440,
+          "viewportWidth": 1440
+        }
+      }
+    },
+    {
+      "id": "dashboard-dark",
+      "title": "Dashboard · dark theme",
+      "group": "Theme",
+      "device": "Desktop",
+      "note": "Candidate-only view: baseline has no equivalent theme toggle.",
+      "checked": "Toggle applied immediately and remained dark after reload; restored light afterward.",
+      "after": {
+        "id": "dashboard-dark",
+        "side": "after",
+        "file": "dashboard-dark-after.jpg",
+        "width": 1440,
+        "height": 1000,
+        "path": "/dashboard",
+        "capturedAt": "2026-11-15T03:38:40.792Z",
+        "rendered": {
+          "bodyFont": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+          "cardPadding": "0px",
+          "heading": "Welcome back, Muthukumar",
+          "headingFont": "Literata, \"Literata Fallback\", \"Iowan Old Style\", \"Palatino Linotype\", Georgia, serif",
+          "headingSize": "40px",
+          "primary": "#dcd4ff",
+          "scrollWidth": 1440,
+          "viewportWidth": 1440
+        }
+      },
+      "candidateOnly": true
+    },
+    {
+      "id": "dashboard-mobile",
+      "title": "Dashboard",
+      "group": "Member",
+      "device": "Mobile",
+      "note": "Same loaded counters at 390 × 844 CSS pixels.",
+      "checked": "Compact header, stacked cards, bottom navigation and document width.",
+      "before": {
+        "id": "dashboard-mobile",
+        "side": "before",
+        "file": "dashboard-mobile-before.jpg",
+        "width": 390,
+        "height": 844,
+        "path": "/dashboard",
+        "capturedAt": "2026-11-15T03:38:49.670Z",
+        "rendered": {
+          "bodyFont": "Inter, \"Inter Fallback\", \"Noto Sans Devanagari\", \"Noto Sans Devanagari Fallback\", \"Noto Sans KR\", \"Noto Sans KR Fallback\", \"Noto Sans SC\", \"Noto Sans SC Fallback\", \"Noto Sans JP\", \"Noto Sans JP Fallback\", ui-sans-serif, system-ui, sans-serif",
+          "cardPadding": null,
+          "heading": "Welcome back, Muthukumar",
+          "headingFont": "Lora, \"Lora Fallback\", Lora, \"Iowan Old Style\", \"Palatino Linotype\", Georgia, serif",
+          "headingSize": "30.57px",
+          "primary": "",
+          "scrollWidth": 390,
+          "viewportWidth": 390
+        }
+      },
+      "after": {
+        "id": "dashboard-mobile",
+        "side": "after",
+        "file": "dashboard-mobile-after.jpg",
+        "width": 390,
+        "height": 844,
+        "path": "/dashboard",
+        "capturedAt": "2026-11-15T03:38:49.735Z",
+        "rendered": {
+          "bodyFont": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+          "cardPadding": "0px",
+          "heading": "Welcome back, Muthukumar",
+          "headingFont": "Literata, \"Literata Fallback\", \"Iowan Old Style\", \"Palatino Linotype\", Georgia, serif",
+          "headingSize": "32px",
+          "primary": "#572ea6",
+          "scrollWidth": 390,
+          "viewportWidth": 390
+        }
+      }
+    },
+    {
+      "id": "photos-mobile",
+      "title": "Photos library",
+      "group": "Media",
+      "device": "Mobile",
+      "note": "Same 24-item library with mobile virtualization.",
+      "checked": "Full-width search/filter bar, two-column media and bottom navigation.",
+      "before": {
+        "id": "photos-mobile",
+        "side": "before",
+        "file": "photos-mobile-before.jpg",
+        "width": 390,
+        "height": 844,
+        "path": "/photos",
+        "capturedAt": "2026-11-15T03:39:08.911Z",
+        "rendered": {
+          "bodyFont": "Inter, \"Inter Fallback\", \"Noto Sans Devanagari\", \"Noto Sans Devanagari Fallback\", \"Noto Sans KR\", \"Noto Sans KR Fallback\", \"Noto Sans SC\", \"Noto Sans SC Fallback\", \"Noto Sans JP\", \"Noto Sans JP Fallback\", ui-sans-serif, system-ui, sans-serif",
+          "cardPadding": null,
+          "heading": "Your photos",
+          "headingFont": "Lora, \"Lora Fallback\", Lora, \"Iowan Old Style\", \"Palatino Linotype\", Georgia, serif",
+          "headingSize": "30.57px",
+          "primary": "",
+          "scrollWidth": 390,
+          "viewportWidth": 390
+        }
+      },
+      "after": {
+        "id": "photos-mobile",
+        "side": "after",
+        "file": "photos-mobile-after.jpg",
+        "width": 390,
+        "height": 844,
+        "path": "/photos",
+        "capturedAt": "2026-11-15T03:39:09.002Z",
+        "rendered": {
+          "bodyFont": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+          "cardPadding": "24px",
+          "heading": "Your photos",
+          "headingFont": "Literata, \"Literata Fallback\", \"Iowan Old Style\", \"Palatino Linotype\", Georgia, serif",
+          "headingSize": "32px",
+          "primary": "#572ea6",
+          "scrollWidth": 390,
+          "viewportWidth": 390
+        }
+      }
+    },
+    {
+      "id": "photo-preview-mobile",
+      "title": "Photo preview · compact",
+      "group": "Media",
+      "device": "Mobile",
+      "note": "Same first visible October image on both origins.",
+      "checked": "Compact caption summary and View details action.",
+      "before": {
+        "id": "photo-preview-mobile",
+        "side": "before",
+        "file": "photo-preview-mobile-before.jpg",
+        "width": 390,
+        "height": 844,
+        "path": "/photos",
+        "capturedAt": "2026-11-15T03:39:43.322Z",
+        "rendered": {
+          "bodyFont": "Inter, \"Inter Fallback\", \"Noto Sans Devanagari\", \"Noto Sans Devanagari Fallback\", \"Noto Sans KR\", \"Noto Sans KR Fallback\", \"Noto Sans SC\", \"Noto Sans SC Fallback\", \"Noto Sans JP\", \"Noto Sans JP Fallback\", ui-sans-serif, system-ui, sans-serif",
+          "cardPadding": null,
+          "heading": "Your photos",
+          "headingFont": "Lora, \"Lora Fallback\", Lora, \"Iowan Old Style\", \"Palatino Linotype\", Georgia, serif",
+          "headingSize": "30.57px",
+          "primary": "",
+          "scrollWidth": 390,
+          "viewportWidth": 390
+        }
+      },
+      "after": {
+        "id": "photo-preview-mobile",
+        "side": "after",
+        "file": "photo-preview-mobile-after.jpg",
+        "width": 390,
+        "height": 844,
+        "path": "/photos",
+        "capturedAt": "2026-11-15T03:39:43.401Z",
+        "rendered": {
+          "bodyFont": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+          "cardPadding": "24px",
+          "heading": "Your photos",
+          "headingFont": "Literata, \"Literata Fallback\", \"Iowan Old Style\", \"Palatino Linotype\", Georgia, serif",
+          "headingSize": "32px",
+          "primary": "#572ea6",
+          "scrollWidth": 390,
+          "viewportWidth": 390
+        }
+      }
+    },
+    {
+      "id": "photo-details-mobile",
+      "title": "Photo preview · expanded",
+      "group": "Media",
+      "device": "Mobile",
+      "note": "Details expanded through the visible View details control on both viewers.",
+      "checked": "Who/When/Where/Caption retained behind an explicit mobile disclosure.",
+      "before": {
+        "id": "photo-details-mobile",
+        "side": "before",
+        "file": "photo-details-mobile-before.jpg",
+        "width": 390,
+        "height": 844,
+        "path": "/photos",
+        "capturedAt": "2026-11-15T03:39:55.561Z",
+        "rendered": {
+          "bodyFont": "Inter, \"Inter Fallback\", \"Noto Sans Devanagari\", \"Noto Sans Devanagari Fallback\", \"Noto Sans KR\", \"Noto Sans KR Fallback\", \"Noto Sans SC\", \"Noto Sans SC Fallback\", \"Noto Sans JP\", \"Noto Sans JP Fallback\", ui-sans-serif, system-ui, sans-serif",
+          "cardPadding": null,
+          "heading": "Your photos",
+          "headingFont": "Lora, \"Lora Fallback\", Lora, \"Iowan Old Style\", \"Palatino Linotype\", Georgia, serif",
+          "headingSize": "30.57px",
+          "primary": "",
+          "scrollWidth": 390,
+          "viewportWidth": 390
+        }
+      },
+      "after": {
+        "id": "photo-details-mobile",
+        "side": "after",
+        "file": "photo-details-mobile-after.jpg",
+        "width": 390,
+        "height": 844,
+        "path": "/photos",
+        "capturedAt": "2026-11-15T03:39:55.652Z",
+        "rendered": {
+          "bodyFont": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+          "cardPadding": "24px",
+          "heading": "Your photos",
+          "headingFont": "Literata, \"Literata Fallback\", \"Iowan Old Style\", \"Palatino Linotype\", Georgia, serif",
+          "headingSize": "32px",
+          "primary": "#572ea6",
+          "scrollWidth": 390,
+          "viewportWidth": 390
+        }
+      }
+    },
+    {
+      "id": "photo-calendar-mobile",
+      "title": "Photo date calendar",
+      "group": "Media",
+      "device": "Mobile",
+      "note": "Same date editor opened without choosing or saving a date.",
+      "checked": "Candidate calendar grid bounds: x64–326, y515–773 within a 390 × 844 viewport.",
+      "before": {
+        "id": "photo-calendar-mobile",
+        "side": "before",
+        "file": "photo-calendar-mobile-before.jpg",
+        "width": 390,
+        "height": 844,
+        "path": "/photos",
+        "capturedAt": "2026-11-15T03:40:05.018Z",
+        "rendered": {
+          "bodyFont": "Inter, \"Inter Fallback\", \"Noto Sans Devanagari\", \"Noto Sans Devanagari Fallback\", \"Noto Sans KR\", \"Noto Sans KR Fallback\", \"Noto Sans SC\", \"Noto Sans SC Fallback\", \"Noto Sans JP\", \"Noto Sans JP Fallback\", ui-sans-serif, system-ui, sans-serif",
+          "cardPadding": null,
+          "heading": "Your photos",
+          "headingFont": "Lora, \"Lora Fallback\", Lora, \"Iowan Old Style\", \"Palatino Linotype\", Georgia, serif",
+          "headingSize": "30.57px",
+          "primary": "",
+          "scrollWidth": 390,
+          "viewportWidth": 390
+        }
+      },
+      "after": {
+        "id": "photo-calendar-mobile",
+        "side": "after",
+        "file": "photo-calendar-mobile-after.jpg",
+        "width": 390,
+        "height": 844,
+        "path": "/photos",
+        "capturedAt": "2026-11-15T03:40:05.102Z",
+        "rendered": {
+          "bodyFont": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+          "cardPadding": "24px",
+          "heading": "Your photos",
+          "headingFont": "Literata, \"Literata Fallback\", \"Iowan Old Style\", \"Palatino Linotype\", Georgia, serif",
+          "headingSize": "32px",
+          "primary": "#572ea6",
+          "scrollWidth": 390,
+          "viewportWidth": 390
+        }
+      }
+    },
+    {
+      "id": "contacts-mobile",
+      "title": "Contact details",
+      "group": "Member",
+      "device": "Mobile",
+      "note": "Same selected contact opens as a dedicated mobile detail view.",
+      "checked": "Detail controls and Back to Contacts navigation; returned successfully on both origins.",
+      "before": {
+        "id": "contacts-mobile",
+        "side": "before",
+        "file": "contacts-mobile-before.jpg",
+        "width": 390,
+        "height": 844,
+        "path": "/contacts",
+        "capturedAt": "2026-11-15T03:40:21.542Z",
+        "rendered": {
+          "bodyFont": "Inter, \"Inter Fallback\", \"Noto Sans Devanagari\", \"Noto Sans Devanagari Fallback\", \"Noto Sans KR\", \"Noto Sans KR Fallback\", \"Noto Sans SC\", \"Noto Sans SC Fallback\", \"Noto Sans JP\", \"Noto Sans JP Fallback\", ui-sans-serif, system-ui, sans-serif",
+          "cardPadding": null,
+          "heading": "Contacts",
+          "headingFont": "Lora, \"Lora Fallback\", Lora, \"Iowan Old Style\", \"Palatino Linotype\", Georgia, serif",
+          "headingSize": "30.57px",
+          "primary": "",
+          "scrollWidth": 390,
+          "viewportWidth": 390
+        }
+      },
+      "after": {
+        "id": "contacts-mobile",
+        "side": "after",
+        "file": "contacts-mobile-after.jpg",
+        "width": 390,
+        "height": 844,
+        "path": "/contacts",
+        "capturedAt": "2026-11-15T03:40:21.602Z",
+        "rendered": {
+          "bodyFont": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+          "cardPadding": "24px",
+          "heading": "Contacts",
+          "headingFont": "Literata, \"Literata Fallback\", \"Iowan Old Style\", \"Palatino Linotype\", Georgia, serif",
+          "headingSize": "32px",
+          "primary": "#572ea6",
+          "scrollWidth": 390,
+          "viewportWidth": 390
+        }
+      }
+    },
+    {
+      "id": "contact-filters-mobile",
+      "title": "Contact filters",
+      "group": "Dialogs",
+      "device": "Mobile",
+      "note": "Opened after returning to the contact list.",
+      "checked": "Sort/filter grouped in a compact modal, with reset/apply controls.",
+      "before": {
+        "id": "contact-filters-mobile",
+        "side": "before",
+        "file": "contact-filters-mobile-before.jpg",
+        "width": 390,
+        "height": 844,
+        "path": "/contacts",
+        "capturedAt": "2026-11-15T03:40:49.387Z",
+        "rendered": {
+          "bodyFont": "Inter, \"Inter Fallback\", \"Noto Sans Devanagari\", \"Noto Sans Devanagari Fallback\", \"Noto Sans KR\", \"Noto Sans KR Fallback\", \"Noto Sans SC\", \"Noto Sans SC Fallback\", \"Noto Sans JP\", \"Noto Sans JP Fallback\", ui-sans-serif, system-ui, sans-serif",
+          "cardPadding": null,
+          "heading": "Contacts",
+          "headingFont": "Lora, \"Lora Fallback\", Lora, \"Iowan Old Style\", \"Palatino Linotype\", Georgia, serif",
+          "headingSize": "30.4px",
+          "primary": "",
+          "scrollWidth": 390,
+          "viewportWidth": 390
+        }
+      },
+      "after": {
+        "id": "contact-filters-mobile",
+        "side": "after",
+        "file": "contact-filters-mobile-after.jpg",
+        "width": 390,
+        "height": 844,
+        "path": "/contacts",
+        "capturedAt": "2026-11-15T03:40:49.469Z",
+        "rendered": {
+          "bodyFont": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+          "cardPadding": "24px",
+          "heading": "Contacts",
+          "headingFont": "Literata, \"Literata Fallback\", \"Iowan Old Style\", \"Palatino Linotype\", Georgia, serif",
+          "headingSize": "32px",
+          "primary": "#572ea6",
+          "scrollWidth": 390,
+          "viewportWidth": 390
+        }
+      }
+    },
+    {
+      "id": "your-life-mobile",
+      "title": "Your Life",
+      "group": "Profile",
+      "device": "Mobile",
+      "note": "Same loaded answers stack by life stage on mobile.",
+      "checked": "Readable stage labels, answer layout and no document-width overflow.",
+      "before": {
+        "id": "your-life-mobile",
+        "side": "before",
+        "file": "your-life-mobile-before.jpg",
+        "width": 390,
+        "height": 844,
+        "path": "/profile/your-life",
+        "capturedAt": "2026-11-15T03:41:03.736Z",
+        "rendered": {
+          "bodyFont": "Inter, \"Inter Fallback\", \"Noto Sans Devanagari\", \"Noto Sans Devanagari Fallback\", \"Noto Sans KR\", \"Noto Sans KR Fallback\", \"Noto Sans SC\", \"Noto Sans SC Fallback\", \"Noto Sans JP\", \"Noto Sans JP Fallback\", ui-sans-serif, system-ui, sans-serif",
+          "cardPadding": null,
+          "heading": "Your Life",
+          "headingFont": "Lora, \"Lora Fallback\", Lora, \"Iowan Old Style\", \"Palatino Linotype\", Georgia, serif",
+          "headingSize": "30.57px",
+          "primary": "",
+          "scrollWidth": 390,
+          "viewportWidth": 390
+        }
+      },
+      "after": {
+        "id": "your-life-mobile",
+        "side": "after",
+        "file": "your-life-mobile-after.jpg",
+        "width": 390,
+        "height": 844,
+        "path": "/profile/your-life",
+        "capturedAt": "2026-11-15T03:41:03.807Z",
+        "rendered": {
+          "bodyFont": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+          "cardPadding": "20px",
+          "heading": "Your Life",
+          "headingFont": "Literata, \"Literata Fallback\", \"Iowan Old Style\", \"Palatino Linotype\", Georgia, serif",
+          "headingSize": "32px",
+          "primary": "#572ea6",
+          "scrollWidth": 390,
+          "viewportWidth": 390
+        }
+      }
+    },
+    {
+      "id": "life-answer-mobile",
+      "title": "Add life answer",
+      "group": "Dialogs",
+      "device": "Mobile",
+      "note": "Favorite books / Childhood form loaded; no answer saved.",
+      "checked": "Mobile dialog width, required content and form controls.",
+      "before": {
+        "id": "life-answer-mobile",
+        "side": "before",
+        "file": "life-answer-mobile-before.jpg",
+        "width": 390,
+        "height": 844,
+        "path": "/profile/your-life",
+        "capturedAt": "2026-11-15T03:41:17.755Z",
+        "rendered": {
+          "bodyFont": "Inter, \"Inter Fallback\", \"Noto Sans Devanagari\", \"Noto Sans Devanagari Fallback\", \"Noto Sans KR\", \"Noto Sans KR Fallback\", \"Noto Sans SC\", \"Noto Sans SC Fallback\", \"Noto Sans JP\", \"Noto Sans JP Fallback\", ui-sans-serif, system-ui, sans-serif",
+          "cardPadding": null,
+          "heading": "Your Life",
+          "headingFont": "Lora, \"Lora Fallback\", Lora, \"Iowan Old Style\", \"Palatino Linotype\", Georgia, serif",
+          "headingSize": "30.4px",
+          "primary": "",
+          "scrollWidth": 390,
+          "viewportWidth": 390
+        }
+      },
+      "after": {
+        "id": "life-answer-mobile",
+        "side": "after",
+        "file": "life-answer-mobile-after.jpg",
+        "width": 390,
+        "height": 844,
+        "path": "/profile/your-life",
+        "capturedAt": "2026-11-15T03:41:17.818Z",
+        "rendered": {
+          "bodyFont": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+          "cardPadding": "20px",
+          "heading": "Your Life",
+          "headingFont": "Literata, \"Literata Fallback\", \"Iowan Old Style\", \"Palatino Linotype\", Georgia, serif",
+          "headingSize": "32px",
+          "primary": "#572ea6",
+          "scrollWidth": 390,
+          "viewportWidth": 390
+        }
+      }
+    },
+    {
+      "id": "member-profile",
+      "title": "Connected member timeline",
+      "group": "Member",
+      "device": "Desktop",
+      "note": "Same William Smith profile and contribution-aware timeline.",
+      "checked": "Member tabs, comment indicator and Request to add to timeline state; no request sent.",
+      "before": {
+        "id": "member-profile",
+        "side": "before",
+        "file": "member-profile-before.jpg",
+        "width": 1440,
+        "height": 1000,
+        "path": "/user/muthu-kumar-7lnxwuj3bv",
+        "capturedAt": "2026-11-15T03:41:52.141Z",
+        "rendered": {
+          "bodyFont": "Inter, \"Inter Fallback\", \"Noto Sans Devanagari\", \"Noto Sans Devanagari Fallback\", \"Noto Sans KR\", \"Noto Sans KR Fallback\", \"Noto Sans SC\", \"Noto Sans SC Fallback\", \"Noto Sans JP\", \"Noto Sans JP Fallback\", ui-sans-serif, system-ui, sans-serif",
+          "cardPadding": null,
+          "heading": "William Smith",
+          "headingFont": "Lora, \"Lora Fallback\", Lora, \"Iowan Old Style\", \"Palatino Linotype\", Georgia, serif",
+          "headingSize": "36px",
+          "primary": "",
+          "scrollWidth": 1440,
+          "viewportWidth": 1440
+        }
+      },
+      "after": {
+        "id": "member-profile",
+        "side": "after",
+        "file": "member-profile-after.jpg",
+        "width": 1440,
+        "height": 1000,
+        "path": "/user/muthu-kumar-7lnxwuj3bv",
+        "capturedAt": "2026-11-15T03:41:52.242Z",
+        "rendered": {
+          "bodyFont": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+          "cardPadding": "32px",
+          "heading": "William Smith",
+          "headingFont": "Literata, \"Literata Fallback\", \"Iowan Old Style\", \"Palatino Linotype\", Georgia, serif",
+          "headingSize": "30px",
+          "primary": "#572ea6",
+          "scrollWidth": 1440,
+          "viewportWidth": 1440
+        }
+      }
+    },
+    {
+      "id": "sign-in",
+      "title": "Sign in",
+      "group": "Authentication",
+      "device": "Desktop",
+      "note": "Both sessions signed out for this fresh comparison; no credentials captured.",
+      "checked": "Social-provider choices, email/password fields, illustration and shared header/footer.",
+      "before": {
+        "id": "sign-in",
+        "side": "before",
+        "file": "sign-in-before.jpg",
+        "width": 1440,
+        "height": 1000,
+        "path": "/sign-in",
+        "capturedAt": "2026-11-15T03:42:14.592Z",
+        "rendered": {
+          "bodyFont": "Inter, \"Inter Fallback\", \"Noto Sans Devanagari\", \"Noto Sans Devanagari Fallback\", \"Noto Sans KR\", \"Noto Sans KR Fallback\", \"Noto Sans SC\", \"Noto Sans SC Fallback\", \"Noto Sans JP\", \"Noto Sans JP Fallback\", ui-sans-serif, system-ui, sans-serif",
+          "cardPadding": null,
+          "heading": "Log in",
+          "headingFont": "Lora, \"Lora Fallback\", Lora, \"Iowan Old Style\", \"Palatino Linotype\", Georgia, serif",
+          "headingSize": "48px",
+          "primary": "",
+          "scrollWidth": 1440,
+          "viewportWidth": 1440
+        }
+      },
+      "after": {
+        "id": "sign-in",
+        "side": "after",
+        "file": "sign-in-after.jpg",
+        "width": 1440,
+        "height": 1000,
+        "path": "/sign-in",
+        "capturedAt": "2026-11-15T03:42:14.692Z",
+        "rendered": {
+          "bodyFont": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+          "cardPadding": "0px",
+          "heading": "Log in",
+          "headingFont": "Literata, \"Literata Fallback\", \"Iowan Old Style\", \"Palatino Linotype\", Georgia, serif",
+          "headingSize": "40px",
+          "primary": "#572ea6",
+          "scrollWidth": 1440,
+          "viewportWidth": 1440
+        }
+      }
+    },
+    {
+      "id": "sign-up",
+      "title": "Create account",
+      "group": "Authentication",
+      "device": "Desktop",
+      "note": "Registration form only; no account or terms acceptance submitted.",
+      "checked": "Provider choices, password guidance, terms control and disabled submit state.",
+      "before": {
+        "id": "sign-up",
+        "side": "before",
+        "file": "sign-up-before.jpg",
+        "width": 1440,
+        "height": 1000,
+        "path": "/sign-up",
+        "capturedAt": "2026-11-15T03:42:24.544Z",
+        "rendered": {
+          "bodyFont": "Inter, \"Inter Fallback\", \"Noto Sans Devanagari\", \"Noto Sans Devanagari Fallback\", \"Noto Sans KR\", \"Noto Sans KR Fallback\", \"Noto Sans SC\", \"Noto Sans SC Fallback\", \"Noto Sans JP\", \"Noto Sans JP Fallback\", ui-sans-serif, system-ui, sans-serif",
+          "cardPadding": null,
+          "heading": "Create an account",
+          "headingFont": "Lora, \"Lora Fallback\", Lora, \"Iowan Old Style\", \"Palatino Linotype\", Georgia, serif",
+          "headingSize": "48px",
+          "primary": "",
+          "scrollWidth": 1440,
+          "viewportWidth": 1440
+        }
+      },
+      "after": {
+        "id": "sign-up",
+        "side": "after",
+        "file": "sign-up-after.jpg",
+        "width": 1440,
+        "height": 1000,
+        "path": "/sign-up",
+        "capturedAt": "2026-11-15T03:42:24.625Z",
+        "rendered": {
+          "bodyFont": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+          "cardPadding": "0px",
+          "heading": "Create an account",
+          "headingFont": "Literata, \"Literata Fallback\", \"Iowan Old Style\", \"Palatino Linotype\", Georgia, serif",
+          "headingSize": "40px",
+          "primary": "#572ea6",
+          "scrollWidth": 1440,
+          "viewportWidth": 1440
+        }
+      }
+    },
+    {
+      "id": "sign-up-mobile",
+      "title": "Create account",
+      "group": "Authentication",
+      "device": "Mobile",
+      "note": "Mobile artwork stays hidden; social choices remain two by two.",
+      "checked": "Form remains reachable with compact provider layout at 390px.",
+      "before": {
+        "id": "sign-up-mobile",
+        "side": "before",
+        "file": "sign-up-mobile-before.jpg",
+        "width": 390,
+        "height": 844,
+        "path": "/sign-up",
+        "capturedAt": "2026-11-15T03:42:24.717Z",
+        "rendered": {
+          "bodyFont": "Inter, \"Inter Fallback\", \"Noto Sans Devanagari\", \"Noto Sans Devanagari Fallback\", \"Noto Sans KR\", \"Noto Sans KR Fallback\", \"Noto Sans SC\", \"Noto Sans SC Fallback\", \"Noto Sans JP\", \"Noto Sans JP Fallback\", ui-sans-serif, system-ui, sans-serif",
+          "cardPadding": null,
+          "heading": "Create an account",
+          "headingFont": "Lora, \"Lora Fallback\", Lora, \"Iowan Old Style\", \"Palatino Linotype\", Georgia, serif",
+          "headingSize": "30.57px",
+          "primary": "",
+          "scrollWidth": 390,
+          "viewportWidth": 390
+        }
+      },
+      "after": {
+        "id": "sign-up-mobile",
+        "side": "after",
+        "file": "sign-up-mobile-after.jpg",
+        "width": 390,
+        "height": 844,
+        "path": "/sign-up",
+        "capturedAt": "2026-11-15T03:42:24.770Z",
+        "rendered": {
+          "bodyFont": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+          "cardPadding": "0px",
+          "heading": "Create an account",
+          "headingFont": "Literata, \"Literata Fallback\", \"Iowan Old Style\", \"Palatino Linotype\", Georgia, serif",
+          "headingSize": "32px",
+          "primary": "#572ea6",
+          "scrollWidth": 390,
+          "viewportWidth": 390
+        }
+      }
+    },
+    {
+      "id": "home",
+      "title": "Home",
+      "group": "Public site",
+      "device": "Desktop",
+      "note": "Signed-out English landing page on both origins.",
+      "checked": "Text-only branding, feature presentation, header and trust strip separator.",
+      "before": {
+        "id": "home",
+        "side": "before",
+        "file": "home-before.jpg",
+        "width": 1440,
+        "height": 1000,
+        "path": "/",
+        "capturedAt": "2026-11-15T03:42:55.508Z",
+        "rendered": {
+          "bodyFont": "Inter, \"Inter Fallback\", \"Noto Sans Devanagari\", \"Noto Sans Devanagari Fallback\", \"Noto Sans KR\", \"Noto Sans KR Fallback\", \"Noto Sans SC\", \"Noto Sans SC Fallback\", \"Noto Sans JP\", \"Noto Sans JP Fallback\", ui-sans-serif, system-ui, sans-serif",
+          "cardPadding": null,
+          "heading": "How will you be remembered?",
+          "headingFont": "Lora, \"Lora Fallback\", Lora, \"Iowan Old Style\", \"Palatino Linotype\", Georgia, serif",
+          "headingSize": "68px",
+          "primary": "",
+          "scrollWidth": 1440,
+          "viewportWidth": 1440
+        }
+      },
+      "after": {
+        "id": "home",
+        "side": "after",
+        "file": "home-after.jpg",
+        "width": 1440,
+        "height": 1000,
+        "path": "/",
+        "capturedAt": "2026-11-15T03:42:55.613Z",
+        "rendered": {
+          "bodyFont": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+          "cardPadding": "32px",
+          "heading": "How will you be remembered?",
+          "headingFont": "Literata, \"Literata Fallback\", \"Iowan Old Style\", \"Palatino Linotype\", Georgia, serif",
+          "headingSize": "68px",
+          "primary": "#572ea6",
+          "scrollWidth": 1440,
+          "viewportWidth": 1440
+        }
+      }
+    },
+    {
+      "id": "how-it-works",
+      "title": "How It Works",
+      "group": "Public site",
+      "device": "Desktop",
+      "note": "English comparison; candidate French switching and navigation continuity were tested separately.",
+      "checked": "Shared heading/type scale, cards, image presentation and language menu.",
+      "before": {
+        "id": "how-it-works",
+        "side": "before",
+        "file": "how-it-works-before.jpg",
+        "width": 1440,
+        "height": 1000,
+        "path": "/how-it-works",
+        "capturedAt": "2026-11-15T03:43:03.075Z",
+        "rendered": {
+          "bodyFont": "Inter, \"Inter Fallback\", \"Noto Sans Devanagari\", \"Noto Sans Devanagari Fallback\", \"Noto Sans KR\", \"Noto Sans KR Fallback\", \"Noto Sans SC\", \"Noto Sans SC Fallback\", \"Noto Sans JP\", \"Noto Sans JP Fallback\", ui-sans-serif, system-ui, sans-serif",
+          "cardPadding": null,
+          "heading": "How It Works",
+          "headingFont": "Lora, \"Lora Fallback\", Lora, \"Iowan Old Style\", \"Palatino Linotype\", Georgia, serif",
+          "headingSize": "76px",
+          "primary": "",
+          "scrollWidth": 1440,
+          "viewportWidth": 1440
+        }
+      },
+      "after": {
+        "id": "how-it-works",
+        "side": "after",
+        "file": "how-it-works-after.jpg",
+        "width": 1440,
+        "height": 1000,
+        "path": "/how-it-works",
+        "capturedAt": "2026-11-15T03:43:03.160Z",
+        "rendered": {
+          "bodyFont": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+          "cardPadding": "0px",
+          "heading": "How It Works",
+          "headingFont": "Literata, \"Literata Fallback\", \"Iowan Old Style\", \"Palatino Linotype\", Georgia, serif",
+          "headingSize": "76px",
+          "primary": "#572ea6",
+          "scrollWidth": 1440,
+          "viewportWidth": 1440
+        }
+      }
+    },
+    {
+      "id": "pricing",
+      "title": "Public pricing",
+      "group": "Public site",
+      "device": "Desktop",
+      "note": "Public plan presentation only; no private billing or checkout data.",
+      "checked": "Plan typography, lists and shared controls.",
+      "before": {
+        "id": "pricing",
+        "side": "before",
+        "file": "pricing-before.jpg",
+        "width": 1440,
+        "height": 1000,
+        "path": "/pricing",
+        "capturedAt": "2026-11-15T03:44:14.894Z",
+        "rendered": {
+          "bodyFont": "Inter, \"Inter Fallback\", \"Noto Sans Devanagari\", \"Noto Sans Devanagari Fallback\", \"Noto Sans KR\", \"Noto Sans KR Fallback\", \"Noto Sans SC\", \"Noto Sans SC Fallback\", \"Noto Sans JP\", \"Noto Sans JP Fallback\", ui-sans-serif, system-ui, sans-serif",
+          "cardPadding": null,
+          "heading": "Select a plan",
+          "headingFont": "Lora, \"Lora Fallback\", Lora, \"Iowan Old Style\", \"Palatino Linotype\", Georgia, serif",
+          "headingSize": "76px",
+          "primary": "",
+          "scrollWidth": 1440,
+          "viewportWidth": 1440
+        }
+      },
+      "after": {
+        "id": "pricing",
+        "side": "after",
+        "file": "pricing-after.jpg",
+        "width": 1440,
+        "height": 1000,
+        "path": "/pricing",
+        "capturedAt": "2026-11-15T03:44:14.978Z",
+        "rendered": {
+          "bodyFont": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+          "cardPadding": "28px",
+          "heading": "Select a plan",
+          "headingFont": "Literata, \"Literata Fallback\", \"Iowan Old Style\", \"Palatino Linotype\", Georgia, serif",
+          "headingSize": "76px",
+          "primary": "#572ea6",
+          "scrollWidth": 1440,
+          "viewportWidth": 1440
+        }
+      }
+    },
+    {
+      "id": "faq",
+      "title": "FAQ · expanded answer",
+      "group": "Public site",
+      "device": "Desktop",
+      "note": "Same “Is my content private?” answer expanded on both versions.",
+      "checked": "FAQ category layout and accordion disclosure behavior.",
+      "before": {
+        "id": "faq",
+        "side": "before",
+        "file": "faq-before.jpg",
+        "width": 1440,
+        "height": 1000,
+        "path": "/faq",
+        "capturedAt": "2026-11-15T03:44:27.798Z",
+        "rendered": {
+          "bodyFont": "Inter, \"Inter Fallback\", \"Noto Sans Devanagari\", \"Noto Sans Devanagari Fallback\", \"Noto Sans KR\", \"Noto Sans KR Fallback\", \"Noto Sans SC\", \"Noto Sans SC Fallback\", \"Noto Sans JP\", \"Noto Sans JP Fallback\", ui-sans-serif, system-ui, sans-serif",
+          "cardPadding": null,
+          "heading": "Frequently Asked Questions",
+          "headingFont": "Lora, \"Lora Fallback\", Lora, \"Iowan Old Style\", \"Palatino Linotype\", Georgia, serif",
+          "headingSize": "76px",
+          "primary": "",
+          "scrollWidth": 1440,
+          "viewportWidth": 1440
+        }
+      },
+      "after": {
+        "id": "faq",
+        "side": "after",
+        "file": "faq-after.jpg",
+        "width": 1440,
+        "height": 1000,
+        "path": "/faq",
+        "capturedAt": "2026-11-15T03:44:27.878Z",
+        "rendered": {
+          "bodyFont": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+          "cardPadding": null,
+          "heading": "Frequently Asked Questions",
+          "headingFont": "Literata, \"Literata Fallback\", \"Iowan Old Style\", \"Palatino Linotype\", Georgia, serif",
+          "headingSize": "76px",
+          "primary": "#572ea6",
+          "scrollWidth": 1440,
+          "viewportWidth": 1440
+        }
+      }
+    }
+  ],
+  "bundles": [
+    {
+      "label": "Home",
+      "before": 173579,
+      "after": 170003
+    },
+    {
+      "label": "Sign in",
+      "before": 271207,
+      "after": 266969
+    },
+    {
+      "label": "Dashboard",
+      "before": 192382,
+      "after": 189829
+    },
+    {
+      "label": "Timeline",
+      "before": 311210,
+      "after": 310481
+    },
+    {
+      "label": "Photos",
+      "before": 312857,
+      "after": 312978
+    },
+    {
+      "label": "Contacts",
+      "before": 319403,
+      "after": 318724
+    },
+    {
+      "label": "Profile",
+      "before": 190406,
+      "after": 187819
+    },
+    {
+      "label": "New story",
+      "before": 365889,
+      "after": 364404
+    },
+    {
+      "label": "All emitted CSS",
+      "before": 118911,
+      "after": 118656
+    },
+    {
+      "label": "All emitted JavaScript (includes deferred)",
+      "before": 1541074,
+      "after": 1589527
+    }
+  ],
+  "manualChecks": [
+    "Fresh same-account desktop and mobile captures, including loaded lists, forms, empty states and media dialogs.",
+    "Photo viewer opened and Next navigation exercised on both versions; mobile details expanded and date calendar opened without changing values.",
+    "Mobile contact return action, filter modal and life-answer form opened on both origins.",
+    "FAQ answer expanded on both versions. Candidate French selection updated How It Works immediately and persisted into the home route, then English was restored.",
+    "Candidate theme applied immediately and survived reload; light theme was restored. Captured candidate mobile document widths stayed within the tested viewport."
+  ],
+  "limitations": [
+    "Latest named Figma spacing/typography variable reconciliation: live Figma read was quota-limited; designer sign-off remains pending.",
+    "Authenticated automated transactional suite not run: controlled credentials/fixtures were not supplied. Read-only browser checks do not prove saves, deletion, sharing permissions or provider handshakes.",
+    "Large uploads, camera/microphone recording, real mobile devices and all nine locales are not newly accepted by this review.",
+    "Settings/billing and sensitive account screens omitted from public captures. Public pricing is informational only.",
+    "Origin/CDN media failures can differ between localhost and Vercel; a baseline video failed to load. Those failures are not classified as integration regressions here.",
+    "Production LCP/INP/CPU and network timings not measured. Local screenshots use the dev server; production bundles were measured separately.",
+    "Gifts, concierge, billing and other previously partial business features remain partial; a restyled screen does not complete them."
+  ]
+}

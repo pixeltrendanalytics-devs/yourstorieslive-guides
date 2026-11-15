@@ -6,10 +6,11 @@
   "description": "A static library of YourStoriesLive architecture, deployment and media guides.",
   "scripts": {
     "build": "node scripts/build.mjs",
-    "check": "node scripts/check.mjs",
+    "check": "node scripts/build-ui-verification.mjs --check && node --test scripts/build-ui-verification.test.mjs && node scripts/check.mjs",
     "verify": "npm run build && npm run check",
     "preview": "node scripts/serve.mjs",
-    "sync:api": "node scripts/sync-api-reference.mjs"
+    "sync:api": "node scripts/sync-api-reference.mjs",
+    "build:ui-verification": "node scripts/build-ui-verification.mjs"
   },
   "engines": { "node": ">=22" },
   "devDependencies": { "marked": "18.1.0" }

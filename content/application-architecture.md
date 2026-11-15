@@ -1,10 +1,10 @@
 # Application architecture: Next.js, NestJS BFF and PHP
 
-Reviewed: 10 October 2026 · Audience: stakeholders, product owners and developers
+Frontend integration reviewed: 15 November 2026 · Backend overview inspected: 10 October 2026 · Audience: stakeholders, product owners and developers
 
 YourStoriesLive is modernizing its web experience in stages. Next.js owns the user interface; a NestJS backend for frontend (BFF) gives it a consistent application API; the existing PHP services continue to serve most established business operations. Completing the UI migration and replacing the PHP backend are separate milestones.
 
-This guide describes the inspected main-branch code. The AWS-owned media implementation is a separate POC branch and is covered in the [AWS POC record](yourstorieslive-aws-media-poc-record.html). Hosting diagrams in that record do not establish the current production deployment.
+The backend overview below retains its dated main-branch inspection. The frontend integration addendum describes feature branch `62a7e286`, not a claim that application main or Vercel already runs the new UI. The AWS-owned media implementation is a separate POC branch and is covered in the [AWS POC record](yourstorieslive-aws-media-poc-record.html). Hosting diagrams in that record do not establish the current production deployment.
 
 ## At a glance
 
@@ -34,11 +34,19 @@ The application API client targets the BFF. Media display and explicitly configu
 
 The inspected frontend uses Next.js 16, React 19 and TypeScript. App Router groups organize public, authentication, authenticated-member and collaboration pages. A shared application shell provides navigation, locale controls and account actions; feature folders contain each area's screens and interaction logic.
 
-Shared UI components and design tokens make forms, dialogs, cards, loaders and empty states consistent. The kitchen-sink page is a development reference for those components. Redux manages client-side application state, React Hook Form and Zod support forms, and typed API service functions keep request details separate from rendering code.
+The private `@yourstorieslive/ui` 1.3.1 and `@yourstorieslive/tokens` 1.2.0 packages now own reusable controls, presentation, spacing and typography on the integration branch. `DesignSystemProvider` supplies the shared theme boundary. The old local kitchen-sink page has been removed; [library Storybook](https://yourstorieslive-ui.vercel.app) is the component catalogue. Application adapters retain framework and business behavior. Redux manages client-side application state, React Hook Form and Zod support forms, and typed API service functions keep request details separate from rendering code.
 
 The site has nine UI locale catalogs: English, Hindi, Tamil, Korean, Chinese, French, Spanish, German and Japanese. Editorial and member-written content have separate translation coverage; a translated navigation bar does not establish that every article or member story has been translated.
 
 The frontend is configured with `output: 'standalone'`. It runs a Node.js server and retains Next.js runtime features, including image optimization. Public pages and assets can still be cached where appropriate. The standalone application is a different deployment from this static GitHub Pages documentation library.
+
+## Frontend library integration: 15 November update
+
+Public, authentication and member screens consume modular library exports. Next Image/Link, translations, forms, API state, permissions and recording/upload behavior remain application responsibilities. The header offers immediate light/dark switching; the server and provider share a cookie-derived initial theme. Reusable local presentation duplicates were removed while documented domain/layout exceptions remain.
+
+The fresh comparison targets application `62a7e286` against the existing pre-migration Vercel deployment. It includes desktop/mobile screenshots, unit/browser checks and frozen production bundle measurements. Exact latest named Figma spacing-variable reconciliation remains pending live access. See the [integration guide](ui-library-integration-guide.md) and [verification report](ui-library-verification.html) for evidence and sign-off limits.
+
+The published API catalogue source remains BFF `00d2139`, matching the local main checkout on 15 November. This UI integration does not require a changed API contract. That source comparison is not a fresh test of every endpoint or a re-audit of the backend overview below.
 
 ## How the NestJS BFF is organized
 
