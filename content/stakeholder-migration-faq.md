@@ -144,7 +144,7 @@ Controls, theme, spacing, typography and reusable page patterns now come from ve
 
 ### 30. Is the library public, and does this complete the rollout?
 
-The library repository and package artifacts remain private and are not published to npm. This public guide site contains approved test-account screenshots and documentation, not library archives or credentials. The first application integration is merged in main. The 16 November design-review corrections remain on the new feature branch; publishing a comparison does not merge or deploy that candidate. Designer/product sign-off, controlled transactional checks and latest Figma variable reconciliation remain explicit acceptance work.
+The library repository and package artifacts remain private and are not published to npm. This public guide site contains approved test-account screenshots and documentation, not library archives or credentials. The application integration and confirmed design-review corrections are merged in main as of 17 November 2026. Publishing the historical comparison is not proof that a later deployment or all designer acceptance checks have passed. Designer/product sign-off, controlled transactional checks and latest Figma variable reconciliation remain explicit acceptance work.
 
 ### 31. How do we compare appearance and performance fairly?
 

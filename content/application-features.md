@@ -8,9 +8,9 @@ This is a feature map of the inspected code, not a production acceptance certifi
 
 ## Shared presentation: integration update
 
-Application main `5e0a313` uses private UI 1.3.2 / tokens 1.2.0 for controls, cards, navigation, dialogs, photo patterns, spacing and typography. A shared provider and header toggle support light/dark themes. Desktop media previews retain thumbnail navigation; mobile previews retain compact expandable details. The old application kitchen sink has been removed in favor of library Storybook.
+Application main now includes reviewed code `7e315a3d` with private UI 1.4.7 / tokens 1.3.0 for controls, cards, navigation, dialogs, photo patterns, spacing and typography. A shared provider and header toggle support light/dark themes. Desktop media previews retain thumbnail navigation; mobile previews retain compact expandable details. The old application kitchen sink has been removed in favor of library Storybook.
 
-The review-fixes candidate `feature/design-system-review-fixes` adopts UI 1.4.7 / tokens 1.3.0; it is not yet merged or deployed. The 15 November visual report remains historical.
+The review-fixes branch was promoted to main on 17 November 2026. Deployment verification and designer acceptance remain separate. The 15 November visual report remains historical.
 
 This is a presentation migration: permissions, API contracts, upload caps and domain workflows are preserved. Dated read-only comparisons and automated checks are in the [verification report](ui-library-verification.html). See the [integration guide](ui-library-integration-guide.md) for package ownership, performance controls and remaining designer/transactional acceptance. The workflow statuses below preserve their original scope; this review does not newly certify every backend feature.
 

@@ -2,7 +2,7 @@
 
 Reviewed: 17 November 2026 · Audience: application developers, designers and reviewers
 
-The first library integration is merged in application main (`5e0a313`, UI 1.3.2 / tokens 1.2.0). The confirmed designer-review corrections use **UI 1.4.7 / tokens 1.3.0** on the application feature branch **`feature/design-system-review-fixes`**. This candidate has not been merged or deployed over the application.
+Application main now includes the confirmed design-review corrections with **UI 1.4.7 / tokens 1.3.0**. The reviewed application code `7e315a3d` was promoted from `feature/design-system-review-fixes` on 17 November 2026. The package, unit, browser and bundle gates passed before promotion. A main push and its automatic deployment are separate from product/designer acceptance.
 
 The [15 November comparison report](ui-library-verification.html) remains a dated capture of the earlier integration. Its screenshots and measurements have not been relabelled as evidence for this release. The [component catalogue](https://yourstorieslive-ui.vercel.app) and private [library source](https://github.com/pixeltrendanalytics-devs/yourstorieslive-ui) describe the reusable implementation.
 
@@ -14,7 +14,7 @@ The [15 November comparison report](ui-library-verification.html) remains a date
 | Token package | `@yourstorieslive/tokens` **1.3.0** |
 | Library source | `b2fbd0194e12c0635dac6a8319f110efc9cad28a` |
 | Downloadable build | [Actions run 43899632784](https://github.com/pixeltrendanalytics-devs/yourstorieslive-ui/actions/runs/43899632784) |
-| Application source | `7e315a3d9635b574bfacc1a24e131591ebdc0b47` (`feature/design-system-review-fixes`) |
+| Application source | `7e315a3d9635b574bfacc1a24e131591ebdc0b47` (promoted to main; code snapshot) |
 | Baseline | Application main `5e0a313`; historical pre-migration comparison remains dated 15 November |
 
 The library is proprietary. Packages are **not published to npm**. Approved developers download archives from private GitHub Actions artifacts. Public guides and screenshots do not grant access to the library, and must never contain its archives, credentials or signed URLs.
@@ -158,7 +158,7 @@ npm run verify:ui-bundles
 
 Ownership checks reject removed local UI patterns and unsafe library entrypoints. The production gate measures initial route JavaScript and emitted CSS against frozen budgets; do not increase a budget just to pass a migration. Optional menus, OTP, editor/media tools and notification renderers stay deferred where appropriate. Use public modular imports, not the compatibility root barrel.
 
-The 15 November verification passed 432 suites / 5,276 unit tests and 36 pre-login browser tests. The 16 November review candidate has passed 5,277 tests across the same 432 suites with unchanged 90% coverage gates, plus all 38 pre-login browser tests, including the theme/mobile contracts. The initial design-review release passed 50 library unit tests and 18 browser contracts in both CSS delivery modes. The latest pinned 1.4.7 release also passes its upstream CI, including 18 browser contracts. Final-package application validation is recorded in its feature-branch report; these checks are not designer sign-off or authenticated transactional acceptance. Initial route bundles remain within their frozen limits. Total emitted JavaScript increased because deferred output also counts there; smaller initial bundles do not establish lower runtime latency. Production LCP/INP, slow-device behavior and representative network timings still need measurement.
+The historical 15 November verification passed 432 suites / 5,276 unit tests and 36 pre-login browser tests. The promoted review code passed 5,277 tests across the same 432 suites with unchanged 90% coverage gates, plus all 38 pre-login browser tests, including the theme/mobile contracts. The initial design-review release passed 50 library unit tests and 18 browser contracts in both CSS delivery modes. The latest pinned 1.4.7 release also passes its upstream CI, including 18 browser contracts. Final-package application validation is recorded in its feature-branch report; these checks are not designer sign-off or authenticated transactional acceptance. Initial route bundles remain within their frozen limits. Total emitted JavaScript increased because deferred output also counts there; smaller initial bundles do not establish lower runtime latency. Production LCP/INP, slow-device behavior and representative network timings still need measurement.
 
 Authenticated automated tests need controlled credentials and backend fixtures. The published comparison uses read-only authenticated browsing, not a new destructive or transactional end-to-end acceptance run.
 
@@ -169,12 +169,14 @@ Authenticated automated tests need controlled credentials and backend fixtures. 
 - [x] Basics, static/public/authenticated screens migrated and legacy showcase removed.
 - [x] Dated first-integration desktop/mobile evidence retained without relabelling.
 - [x] Confirmed review corrections released in the private library.
-- [ ] Product/designer review and application merge/deployment of the new candidate.
+- [x] Promote the verified review branch to main.
+- [ ] Complete product/designer acceptance and verify the resulting deployment.
 - [ ] Designer approves spacing, typography, component states and latest Figma variable reconciliation.
 - [ ] Product owner approves representative flows and known partial features.
 - [ ] Controlled write/delete, cross-account permissions, provider login/import and large recording/upload acceptance completed.
 - [ ] Production-like performance and supported real-device checks completed.
-- [ ] Merge/deploy the review-fixes application branch after acceptance, with an agreed rollback target.
+- [x] Merge the verified review code into main at the user's request.
+- [ ] Verify deployment with the agreed rollback target retained.
 
 Keep `release/pre-ui-library` and the baseline deployment available during review. Roll back application/package versions together; this presentation migration is not a database migration. Do not change the BFF or PHP mode merely to roll back styling.
 
