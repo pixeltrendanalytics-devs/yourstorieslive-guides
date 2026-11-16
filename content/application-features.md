@@ -1,6 +1,6 @@
 # Application features and member workflows
 
-Frontend presentation reviewed: 15 November 2026 · Original workflow inventory: 10 October 2026 · Audience: product owners, stakeholders and demo participants
+Frontend presentation reviewed: 17 November 2026 · Original workflow inventory: 10 October 2026 · Audience: product owners, stakeholders and demo participants
 
 YourStoriesLive helps members preserve their life stories, organize memories, connect those memories to people, and invite others to contribute. The modern frontend rebuilds those journeys in Next.js, backed by NestJS routes and existing PHP services.
 
@@ -8,9 +8,11 @@ This is a feature map of the inspected code, not a production acceptance certifi
 
 ## Shared presentation: integration update
 
-The integration feature branch `62a7e286` uses private UI 1.3.1 / tokens 1.2.0 for controls, cards, navigation, dialogs, photo patterns, spacing and typography. A shared provider and header toggle support light/dark themes. Desktop media previews retain thumbnail navigation; mobile previews retain compact expandable details. The old application kitchen sink has been removed in favor of library Storybook.
+Application main `5e0a313` uses private UI 1.3.2 / tokens 1.2.0 for controls, cards, navigation, dialogs, photo patterns, spacing and typography. A shared provider and header toggle support light/dark themes. Desktop media previews retain thumbnail navigation; mobile previews retain compact expandable details. The old application kitchen sink has been removed in favor of library Storybook.
 
-This is a presentation migration: permissions, API contracts, upload caps and domain workflows are preserved. Fresh read-only comparisons and automated checks are in the [verification report](ui-library-verification.html). See the [integration guide](ui-library-integration-guide.md) for package ownership, performance controls and remaining designer/transactional acceptance. The workflow statuses below preserve their original scope; this review does not newly certify every backend feature.
+The review-fixes candidate `feature/design-system-review-fixes` adopts UI 1.4.7 / tokens 1.3.0; it is not yet merged or deployed. The 15 November visual report remains historical.
+
+This is a presentation migration: permissions, API contracts, upload caps and domain workflows are preserved. Dated read-only comparisons and automated checks are in the [verification report](ui-library-verification.html). See the [integration guide](ui-library-integration-guide.md) for package ownership, performance controls and remaining designer/transactional acceptance. The workflow statuses below preserve their original scope; this review does not newly certify every backend feature.
 
 ## The main member journeys
 

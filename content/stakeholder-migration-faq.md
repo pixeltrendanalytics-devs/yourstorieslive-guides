@@ -144,11 +144,11 @@ Controls, theme, spacing, typography and reusable page patterns now come from ve
 
 ### 30. Is the library public, and does this complete the rollout?
 
-The library repository and package artifacts remain private and are not published to npm. This public guide site contains approved test-account screenshots and documentation, not library archives or credentials. The application integration is on its feature branch; publication of a comparison is not a merge or production deployment. Designer/product sign-off, controlled transactional checks and latest Figma variable reconciliation remain explicit acceptance work.
+The library repository and package artifacts remain private and are not published to npm. This public guide site contains approved test-account screenshots and documentation, not library archives or credentials. The first application integration is merged in main. The 16 November design-review corrections remain on the new feature branch; publishing a comparison does not merge or deploy that candidate. Designer/product sign-off, controlled transactional checks and latest Figma variable reconciliation remain explicit acceptance work.
 
 ### 31. How do we compare appearance and performance fairly?
 
-The [fresh comparison report](ui-library-verification.html) pairs the same account/content at matched viewport sizes on the existing Vercel application and localhost. It labels candidate-only dark theme views, environmental media failures and untested journeys. Unit tests, public-page browser tests and frozen bundle checks passed. Bundle sizes describe emitted code, not real-user responsiveness; production-like timings and real devices still need measurement.
+The [15 November comparison report](ui-library-verification.html) pairs the same account/content at matched viewport sizes on the existing Vercel application and localhost. It labels candidate-only dark theme views, environmental media failures and untested journeys. Unit tests, public-page browser tests and frozen bundle checks passed. Bundle sizes describe emitted code, not real-user responsiveness; production-like timings and real devices still need measurement.
 
 ## Basis of these answers
 

@@ -1,21 +1,21 @@
 # Integrating the YourStoriesLive design system
 
-Reviewed: 15 November 2026 · Audience: application developers, designers and reviewers
+Reviewed: 17 November 2026 · Audience: application developers, designers and reviewers
 
-The application now consumes the private YSL library rather than maintaining a second visual component system. This guide describes the integration on **`feature/ysl-ui-library-integration` at `62a7e286`**. It does not mean this branch has been merged into application main or deployed over the existing Vercel application.
+The first library integration is merged in application main (`5e0a313`, UI 1.3.2 / tokens 1.2.0). The confirmed designer-review corrections use **UI 1.4.7 / tokens 1.3.0** on the application feature branch **`feature/design-system-review-fixes`**. This candidate has not been merged or deployed over the application.
 
-Start with the [side-by-side verification report](ui-library-verification.html) for current screenshots, checks and acceptance limits. The [component catalogue](https://yourstorieslive-ui.vercel.app) documents reusable components. The private source is [yourstorieslive-ui](https://github.com/pixeltrendanalytics-devs/yourstorieslive-ui).
+The [15 November comparison report](ui-library-verification.html) remains a dated capture of the earlier integration. Its screenshots and measurements have not been relabelled as evidence for this release. The [component catalogue](https://yourstorieslive-ui.vercel.app) and private [library source](https://github.com/pixeltrendanalytics-devs/yourstorieslive-ui) describe the reusable implementation.
 
 ## Version and distribution contract
 
 | Item | Integration snapshot |
 | --- | --- |
-| React UI package | `@yourstorieslive/ui` **1.3.1** |
-| Token package | `@yourstorieslive/tokens` **1.2.0** |
-| Library source | `9401d273f35ce6d5e2138b1dc1d06cb167c08008` |
-| Downloadable build | [Actions run 43669008401](https://github.com/pixeltrendanalytics-devs/yourstorieslive-ui/actions/runs/43669008401) |
-| Application source | `62a7e2868470e96d9b0be6c252ed118ff0cd1e1d` |
-| Baseline | Existing pre-migration Vercel deployment, captured 15 November; deployed commit not independently established |
+| React UI package | `@yourstorieslive/ui` **1.4.7** |
+| Token package | `@yourstorieslive/tokens` **1.3.0** |
+| Library source | `b2fbd0194e12c0635dac6a8319f110efc9cad28a` |
+| Downloadable build | [Actions run 43899632784](https://github.com/pixeltrendanalytics-devs/yourstorieslive-ui/actions/runs/43899632784) |
+| Application source | `7e315a3d9635b574bfacc1a24e131591ebdc0b47` (`feature/design-system-review-fixes`) |
+| Baseline | Application main `5e0a313`; historical pre-migration comparison remains dated 15 November |
 
 The library is proprietary. Packages are **not published to npm**. Approved developers download archives from private GitHub Actions artifacts. Public guides and screenshots do not grant access to the library, and must never contain its archives, credentials or signed URLs.
 
@@ -24,7 +24,7 @@ The library is proprietary. Packages are **not published to npm**. Approved deve
 Use a GitHub account with read access to the private library. For the exact reviewed build:
 
 ```sh
-gh run download 43669008401 \
+gh run download 43899632784 \
   --repo pixeltrendanalytics-devs/yourstorieslive-ui \
   --name yourstorieslive-design-system \
   --dir vendor/yourstorieslive-ui
@@ -33,8 +33,8 @@ cd vendor/yourstorieslive-ui
 shasum -a 256 -c SHA256SUMS
 cd ../..
 
-npm install ./vendor/yourstorieslive-ui/yourstorieslive-ui-1.3.1.tgz \
-  ./vendor/yourstorieslive-ui/yourstorieslive-tokens-1.2.0.tgz
+npm install ./vendor/yourstorieslive-ui/yourstorieslive-ui-1.4.7.tgz \
+  ./vendor/yourstorieslive-ui/yourstorieslive-tokens-1.3.0.tgz
 ```
 
 Use `sha256sum -c SHA256SUMS` on Linux. Confirm `manifest.json` names the expected source commit and versions. Review newer releases deliberately; do not silently replace an approved archive with whichever build happens to be latest.
@@ -124,7 +124,7 @@ Documented exceptions include rich text, recording/video behavior, partial dates
 
 ## Spacing and Figma verification
 
-UI 1.3.1 / tokens 1.2.0 centralize the compatible 4px spacing scale and semantic layout/type roles. Shared card, control, navigation and media presentation now comes from the library. The approved light primary is `#572EA6`; control height is 44px, base control radius 12px and card radius 16px.
+UI 1.4.7 / tokens 1.3.0 centralize the compatible 4px spacing scale and semantic layout/type roles. Shared card, control, navigation and media presentation now comes from the library. The later designer review supersedes the earlier violet: the approved light primary is `#50308F`; control height is 44px, base control radius 12px and card radius 16px.
 
 **Latest named Figma variable parity is still pending.** The recorded 14 November Figma inventory lists 28 spacing variables. A fresh variable read reached the Figma MCP Starter-plan quota. The compatible spacing implementation and source cleanup are verified; exact reconciliation against the latest named Figma variables is not certified. Designer review must close that item rather than infer parity from similar screenshots.
 
@@ -148,16 +148,17 @@ npm run verify:ui-artifacts
 npm run typecheck
 npm run lint
 npm run test -- --maxWorkers=2 --workerIdleMemoryLimit=512MB
+npm run test:theme
 npm run test:ui-ownership
 npm run test:ui-budgets
-npm run test:e2e:prelogin -- --workers=2
+npm run test:e2e:prelogin -- --workers=1
 npm run build
 npm run verify:ui-bundles
 ```
 
 Ownership checks reject removed local UI patterns and unsafe library entrypoints. The production gate measures initial route JavaScript and emitted CSS against frozen budgets; do not increase a budget just to pass a migration. Optional menus, OTP, editor/media tools and notification renderers stay deferred where appropriate. Use public modular imports, not the compatibility root barrel.
 
-The 15 November verification passed 432 suites / 5,276 unit tests and 36 pre-login browser tests. Initial route bundles remain within their frozen limits. Total emitted JavaScript increased because deferred output also counts there; smaller initial bundles do not establish lower runtime latency. Production LCP/INP, slow-device behavior and representative network timings still need measurement.
+The 15 November verification passed 432 suites / 5,276 unit tests and 36 pre-login browser tests. The 16 November review candidate has passed 5,277 tests across the same 432 suites with unchanged 90% coverage gates, plus all 38 pre-login browser tests, including the theme/mobile contracts. The initial design-review release passed 50 library unit tests and 18 browser contracts in both CSS delivery modes. The latest pinned 1.4.7 release also passes its upstream CI, including 18 browser contracts. Final-package application validation is recorded in its feature-branch report; these checks are not designer sign-off or authenticated transactional acceptance. Initial route bundles remain within their frozen limits. Total emitted JavaScript increased because deferred output also counts there; smaller initial bundles do not establish lower runtime latency. Production LCP/INP, slow-device behavior and representative network timings still need measurement.
 
 Authenticated automated tests need controlled credentials and backend fixtures. The published comparison uses read-only authenticated browsing, not a new destructive or transactional end-to-end acceptance run.
 
@@ -166,12 +167,14 @@ Authenticated automated tests need controlled credentials and backend fixtures. 
 - [x] Private versioned packages, manifest and checksum validation integrated.
 - [x] Provider/theme/fonts and framework adapters installed.
 - [x] Basics, static/public/authenticated screens migrated and legacy showcase removed.
-- [x] Fresh desktop/mobile evidence and automated checks recorded in the comparison report.
+- [x] Dated first-integration desktop/mobile evidence retained without relabelling.
+- [x] Confirmed review corrections released in the private library.
+- [ ] Product/designer review and application merge/deployment of the new candidate.
 - [ ] Designer approves spacing, typography, component states and latest Figma variable reconciliation.
 - [ ] Product owner approves representative flows and known partial features.
 - [ ] Controlled write/delete, cross-account permissions, provider login/import and large recording/upload acceptance completed.
 - [ ] Production-like performance and supported real-device checks completed.
-- [ ] Merge/deploy the approved application feature branch with an agreed rollback target.
+- [ ] Merge/deploy the review-fixes application branch after acceptance, with an agreed rollback target.
 
 Keep `release/pre-ui-library` and the baseline deployment available during review. Roll back application/package versions together; this presentation migration is not a database migration. Do not change the BFF or PHP mode merely to roll back styling.
 
@@ -182,3 +185,18 @@ Keep `release/pre-ui-library` and the baseline deployment available during revie
 - [Features and member workflows](application-features.md)
 - [Stakeholder migration FAQ](stakeholder-migration-faq.md)
 - [API reference](api-reference.md)
+
+## Confirmed review changes and open decisions
+
+Confirmed changes include solid normal keyboard focus, semantic border fallback,
+Link Button blue/underline states, 24px XS and 10px Small radius, consistent small
+14/22 and mini 12/18 type, 30px CategoryBadge with an icon slot, expanded control
+targets, and standalone heading aliases. Transparent content actions are owned
+by the library rather than repeated local resets. The app retains form, partial
+date, notification and media engine adapters and all API behavior.
+
+Button padding/Large label size, Badge appearance mapping, soft fills, shadow
+policy, icon/chip/tab sizes, category icons, tree geometry, loader specifications,
+forced specimen states and error-focus policy still need design confirmation.
+The existing editor palette remains serialized document data until its named colors have a confirmed mapping. Its literal values have a narrowly scoped guard exception. No public API or undecided token was removed. Fresh live Figma reads remain
+quota-blocked; exact latest-variable/state parity is not certified.
